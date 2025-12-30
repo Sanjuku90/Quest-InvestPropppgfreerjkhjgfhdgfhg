@@ -40,13 +40,13 @@ export default function WalletPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>
-        <h2 className="text-3xl font-bold font-display mb-2">My Wallet</h2>
-        <p className="text-muted-foreground">Manage your deposits and withdrawals securely.</p>
+        <h2 className="text-3xl font-bold font-display mb-2">Mon Portefeuille</h2>
+        <p className="text-muted-foreground">Gérez vos dépôts et retraits en toute sécurité.</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <StatCard
-          title="Total Balance"
+          title="Solde Total"
           value={`${((user.walletBalance ?? 0) + (user.investmentBalance ?? 0)).toLocaleString()} USD`}
           icon={Wallet}
           gradient="from-primary/20 to-orange-500/10"
@@ -56,7 +56,7 @@ export default function WalletPage() {
         <div className="p-6 rounded-2xl bg-card border border-white/5 space-y-4">
            <div className="flex items-center justify-between">
              <div>
-               <p className="text-sm font-medium text-muted-foreground mb-1">Withdrawable</p>
+               <p className="text-sm font-medium text-muted-foreground mb-1">Retirable</p>
                <p className="text-2xl font-mono font-bold">{(user.walletBalance ?? 0).toLocaleString()} USD</p>
              </div>
              <div className="p-3 bg-green-500/10 rounded-full text-green-500">
@@ -73,7 +73,7 @@ export default function WalletPage() {
         <div className="p-6 rounded-2xl bg-card border border-white/5 space-y-4">
            <div className="flex items-center justify-between">
              <div>
-               <p className="text-sm font-medium text-muted-foreground mb-1">Investment</p>
+               <p className="text-sm font-medium text-muted-foreground mb-1">Investissement</p>
                <p className="text-2xl font-mono font-bold">{(user.investmentBalance ?? 0).toLocaleString()} USD</p>
              </div>
              <div className="p-3 bg-blue-500/10 rounded-full text-blue-500">
@@ -88,7 +88,7 @@ export default function WalletPage() {
       </div>
 
       <div className="pt-8">
-        <h3 className="text-xl font-bold font-display mb-6">Transaction History</h3>
+        <h3 className="text-xl font-bold font-display mb-6">Historique des transactions</h3>
         <TransactionList transactions={transactions || []} isLoading={isTxLoading} />
       </div>
     </div>
