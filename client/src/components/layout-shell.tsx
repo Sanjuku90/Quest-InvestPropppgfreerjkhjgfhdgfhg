@@ -8,7 +8,8 @@ import {
   LogOut, 
   Menu,
   X,
-  Trophy
+  Trophy,
+  Shield
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,10 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   ];
 
+  const adminNavItem = user?.isAdmin ? [
+    { href: "/admin", label: "Admin Panel", icon: Shield },
+  ] : [];
+
   if (!user) return <div className="min-h-screen bg-background">{children}</div>;
 
   const NavContent = () => (
@@ -42,7 +47,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <nav className="flex-1 px-3 space-y-1 py-6">
-        {navItems.map((item) => {
+        {[...navItems, ...adminNavItem].map((item) => {
           const isActive = location === item.href;
           const Icon = item.icon;
           return (

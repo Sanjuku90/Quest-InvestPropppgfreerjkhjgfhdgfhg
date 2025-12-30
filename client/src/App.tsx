@@ -16,6 +16,7 @@ import QuestsPage from "@/pages/quests";
 import RoulettePage from "@/pages/roulette";
 import WalletPage from "@/pages/wallet";
 import LeaderboardPage from "@/pages/leaderboard";
+import AdminPage from "@/pages/admin";
 
 // Protected Route Wrapper
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -68,6 +69,9 @@ function Router() {
       </Route>
       <Route path="/leaderboard">
         {() => <ProtectedRoute component={LeaderboardPage} />}
+      </Route>
+      <Route path="/admin">
+        {() => <ProtectedRoute component={AdminPage} />}
       </Route>
 
       <Route component={NotFound} />

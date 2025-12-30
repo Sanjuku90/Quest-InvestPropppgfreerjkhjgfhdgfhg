@@ -18,6 +18,8 @@ export interface IStorage {
   // Transactions
   createTransaction(tx: InsertTransaction): Promise<Transaction>;
   getTransactions(userId: number): Promise<Transaction[]>;
+  getPendingTransactions(): Promise<Transaction[]>;
+  updateTransaction(id: number, status: string, adminNote?: string): Promise<Transaction>;
 
   // Leaderboard
   getLeaderboard(): Promise<Array<any>>;
@@ -80,6 +82,17 @@ export class DatabaseStorage implements IStorage {
       investmentBalance: users.investmentBalance,
       walletBalance: users.walletBalance,
     }).from(users).orderBy(users.investmentBalance);
+  }
+
+  async getPendingTransactions(): Promise<Transaction[]> {
+    return db.select().from(transactions).where(eq(transactions.status, "pending")).orderBy(transactions.createdAt);
+  }
+
+  async updateTransaction(id: number, status: string, adminNote?: string): Promise<Transaction> {
+    const updates: any = { status };
+    if (adminNote) updates.adminNote = adminNote;
+    const [tx] = await db.update(transactions).set(updates).where(eq(transactions.id, id)).returning();
+    return tx;
   }
 }
 

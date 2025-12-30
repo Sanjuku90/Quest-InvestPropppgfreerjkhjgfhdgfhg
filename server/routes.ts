@@ -202,5 +202,66 @@ export async function registerRoutes(
     res.json(withTotals.sort((a, b) => b.investmentBalance - a.investmentBalance));
   });
 
+  // === Admin Routes ===
+  app.get("/api/admin/transactions/pending", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    
+    // Check if user is admin
+    const adminUser = await storage.getUser(user.id);
+    if (!adminUser?.isAdmin) return res.sendStatus(403);
+
+    const transactions = await storage.getPendingTransactions();
+    res.json(transactions);
+  });
+
+  app.post("/api/admin/transactions/:id/approve", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    const txId = Number(req.params.id);
+    const { adminNote } = req.body;
+
+    // Check if user is admin
+    const adminUser = await storage.getUser(user.id);
+    if (!adminUser?.isAdmin) return res.sendStatus(403);
+
+    const tx = await storage.updateTransaction(txId, "approved", adminNote);
+    
+    // If deposit/withdrawal approved, update user balance
+    if (tx.type === "deposit") {
+      const txUser = await storage.getUser(tx.userId);
+      if (txUser) {
+        await storage.updateUser(tx.userId, {
+          investmentBalance: ((txUser.investmentBalance ?? 0) + tx.amount) as any,
+        });
+      }
+    } else if (tx.type === "withdrawal") {
+      const txUser = await storage.getUser(tx.userId);
+      if (txUser && (txUser.walletBalance ?? 0) >= tx.amount) {
+        await storage.updateUser(tx.userId, {
+          walletBalance: ((txUser.walletBalance ?? 0) - tx.amount) as any,
+        });
+      } else {
+        return res.status(400).json({ message: "Solde insuffisant" });
+      }
+    }
+
+    res.json(tx);
+  });
+
+  app.post("/api/admin/transactions/:id/reject", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    const txId = Number(req.params.id);
+    const { adminNote } = req.body;
+
+    // Check if user is admin
+    const adminUser = await storage.getUser(user.id);
+    if (!adminUser?.isAdmin) return res.sendStatus(403);
+
+    const tx = await storage.updateTransaction(txId, "rejected", adminNote);
+    res.json(tx);
+  });
+
   return httpServer;
 }

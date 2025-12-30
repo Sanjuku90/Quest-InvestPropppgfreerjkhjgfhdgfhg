@@ -13,6 +13,7 @@ export const users = pgTable("users", {
   bonusBalance: integer("bonus_balance").default(0), // Locked bonus
   isBonusUnlocked: boolean("is_bonus_unlocked").default(false),
   level: text("level").default("Bronze"), // Bronze, Silver, Gold, Platinum
+  isAdmin: boolean("is_admin").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -32,6 +33,8 @@ export const transactions = pgTable("transactions", {
   type: text("type").notNull(), // deposit, withdrawal, quest_reward, bonus_unlock
   amount: integer("amount").notNull(),
   description: text("description"),
+  status: text("status").default("pending"), // pending, approved, rejected
+  adminNote: text("admin_note"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
