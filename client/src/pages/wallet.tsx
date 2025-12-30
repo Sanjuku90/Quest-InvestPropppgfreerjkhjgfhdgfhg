@@ -21,12 +21,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 
 const amountSchema = z.object({
-  amount: z.coerce.number().min(100, "Minimum amount is 100 USD"),
+  amount: z.coerce.number().min(20, "Montant minimum 20 USD"),
 });
 
 const depositSchema = z.object({
-  amount: z.coerce.number().min(100, "Minimum amount is 100 USD"),
-  depositAddress: z.string().min(1, "Deposit address is required"),
+  amount: z.coerce.number().min(20, "Montant minimum 20 USD"),
+  depositAddress: z.string().min(1, "Adresse de dépôt requise"),
 });
 
 export default function WalletPage() {
@@ -108,32 +108,32 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
   const onSubmit = async (data: { amount: number; depositAddress: string }) => {
     try {
       await depositMutation.mutateAsync({ amount: data.amount, depositAddress: data.depositAddress });
-      toast({ title: "Success", description: "Deposit request submitted for approval" });
+      toast({ title: "Succès", description: "Demande de dépôt soumise pour approbation" });
       onOpenChange(false);
       reset();
     } catch (error) {
-      toast({ title: "Error", description: "Deposit failed", variant: "destructive" });
+      toast({ title: "Erreur", description: "Le dépôt a échoué", variant: "destructive" });
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 h-auto py-3">Add Funds</Button>
+        <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 h-auto py-3">Ajouter des fonds</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Deposit Funds</DialogTitle>
+          <DialogTitle>Dépôt de fonds</DialogTitle>
           <DialogDescription>
-            Send funds to the specified address and submit for admin approval.
+            Envoyez les fonds à l'adresse spécifiée et soumettez pour approbation.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Deposit Address</Label>
+            <Label>Adresse de dépôt</Label>
             <Input 
               type="text" 
-              placeholder="Wallet address" 
+              placeholder="Adresse portefeuille" 
               readOnly
               {...register("depositAddress")}
               className="bg-muted/50"
@@ -141,13 +141,13 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
             {errors.depositAddress && <p className="text-xs text-destructive">{errors.depositAddress.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Amount (USD)</Label>
-            <Input type="number" placeholder="5000" {...register("amount")} />
+            <Label>Montant (USD)</Label>
+            <Input type="number" placeholder="20" {...register("amount")} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
           <Button type="submit" size="lg" className="w-full h-auto py-3" disabled={depositMutation.isPending}>
             {depositMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
-            Submit for Approval
+            Soumettre pour approbation
           </Button>
         </form>
       </DialogContent>
@@ -160,9 +160,9 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
   const { toast } = useToast();
   const schema = z.object({
     amount: z.coerce.number()
-      .min(1000, "Minimum withdrawal is 1000 USD")
-      .max(maxAmount, "Insufficient funds"),
-    walletAddress: z.string().min(1, "USDT TRC20 wallet address is required"),
+      .min(50, "Retrait minimum 50 USD")
+      .max(maxAmount, "Solde insuffisant"),
+    walletAddress: z.string().min(1, "Adresse portefeuille USDT TRC20 requise"),
   });
   
   const { register, handleSubmit, reset, formState: { errors } } = useForm<{ amount: number; walletAddress: string }>({
@@ -176,41 +176,41 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
       onOpenChange(false);
       reset();
     } catch (error) {
-      toast({ title: "Error", description: "Withdrawal failed", variant: "destructive" });
+      toast({ title: "Erreur", description: "Le retrait a échoué", variant: "destructive" });
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg" className="w-full h-auto py-3">Withdraw</Button>
+        <Button variant="outline" size="lg" className="w-full h-auto py-3">Retirer</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Withdraw Funds</DialogTitle>
+          <DialogTitle>Retirer les fonds</DialogTitle>
           <DialogDescription>
-            Transfer funds to your USDT TRC20 wallet. Minimum: 1000 USD.
+            Transférez les fonds vers votre portefeuille USDT TRC20. Minimum : 50 USD.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>USDT TRC20 Wallet Address</Label>
+            <Label>Adresse portefeuille USDT TRC20</Label>
             <Input 
               type="text" 
-              placeholder="TN9hjFHzszNdAk5n8Wt39X6KN72WaNmJM1" 
+              placeholder="Adresse TRC20..." 
               {...register("walletAddress")}
             />
             {errors.walletAddress && <p className="text-xs text-destructive">{errors.walletAddress.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Amount (USD)</Label>
-            <Input type="number" placeholder="1000" {...register("amount")} />
+            <Label>Montant (USD)</Label>
+            <Input type="number" placeholder="50" {...register("amount")} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
-            <p className="text-xs text-muted-foreground text-right">Available: {maxAmount.toLocaleString()} USD</p>
+            <p className="text-xs text-muted-foreground text-right">Disponible : {maxAmount.toLocaleString()} USD</p>
           </div>
           <Button type="submit" size="lg" className="w-full h-auto py-3" disabled={withdrawMutation.isPending}>
             {withdrawMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
-            Submit for Approval
+            Soumettre pour approbation
           </Button>
         </form>
       </DialogContent>
