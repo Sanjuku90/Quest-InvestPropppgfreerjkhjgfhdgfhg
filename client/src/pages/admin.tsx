@@ -70,26 +70,34 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold font-display">Admin - Validation des Transactions</h1>
-        <p className="text-muted-foreground mt-2">Approuvez ou rejetez les dépôts et retraits en attente</p>
+    <div className="space-y-8 max-w-6xl mx-auto">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+            <AlertCircle className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold font-display">Transaction Management</h1>
+        </div>
+        <p className="text-muted-foreground">Review and validate pending user transactions</p>
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading transactions...</p>
         </div>
       ) : transactions.length === 0 ? (
-        <Card className="p-8 text-center">
-          <AlertCircle className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-lg font-semibold">Aucune transaction en attente</p>
-          <p className="text-muted-foreground">Toutes les transactions ont été traitées</p>
+        <Card className="modern-card p-12 text-center">
+          <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Check className="w-8 h-8 text-accent" />
+          </div>
+          <p className="text-lg font-semibold mb-2">All transactions processed</p>
+          <p className="text-muted-foreground">No pending transactions at this moment</p>
         </Card>
       ) : (
-        <div className="grid gap-6">
+        <div className="grid gap-4">
           {transactions.map((tx) => (
-            <Card key={tx.id} className="p-6 space-y-4">
+            <Card key={tx.id} className="modern-card p-5 space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">

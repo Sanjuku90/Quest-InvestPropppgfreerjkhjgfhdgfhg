@@ -9,38 +9,38 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Modern Professional Dark Theme */
-  --background: 210 40% 5%;
-  --foreground: 210 30% 95%;
+  /* Ultra-Modern Minimalist Design */
+  --background: 210 15% 3%;
+  --foreground: 210 20% 98%;
 
-  --card: 210 35% 10%;
-  --card-foreground: 210 30% 95%;
+  --card: 210 20% 8%;
+  --card-foreground: 210 20% 98%;
 
-  --popover: 210 35% 12%;
-  --popover-foreground: 210 30% 95%;
+  --popover: 210 20% 10%;
+  --popover-foreground: 210 20% 98%;
 
-  /* Modern Blue Primary - Professional & trustworthy */
-  --primary: 217 91% 60%;
-  --primary-foreground: 210 40% 5%;
+  /* Vibrant Blue Primary */
+  --primary: 217 100% 58%;
+  --primary-foreground: 210 20% 3%;
 
-  /* Slate Secondary - Clean & sophisticated */
-  --secondary: 217 33% 45%;
-  --secondary-foreground: 210 30% 95%;
+  /* Slate Secondary */
+  --secondary: 210 25% 45%;
+  --secondary-foreground: 210 20% 98%;
 
-  --muted: 217 25% 20%;
-  --muted-foreground: 217 20% 55%;
+  --muted: 210 18% 18%;
+  --muted-foreground: 210 15% 60%;
 
-  --accent: 168 84% 55%; /* Modern Teal */
-  --accent-foreground: 210 40% 5%;
+  --accent: 170 90% 50%; /* Vibrant Teal */
+  --accent-foreground: 210 20% 3%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 5%;
+  --destructive: 0 90% 56%;
+  --destructive-foreground: 210 20% 98%;
 
-  --border: 217 30% 18%;
-  --input: 217 30% 18%;
-  --ring: 217 91% 60%;
+  --border: 210 20% 15%;
+  --input: 210 20% 15%;
+  --ring: 217 100% 58%;
 
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 }
 
 @layer base {
@@ -59,27 +59,35 @@
 
 @layer utilities {
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-blue-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-300;
   }
   
   .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-cyan-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-emerald-300;
   }
 
   .glass-card {
-    @apply bg-card/40 backdrop-blur-md border border-border/40 shadow-lg shadow-black/20;
+    @apply bg-card/50 backdrop-blur-xl border border-border/50 shadow-none;
   }
 
   .glass-card-sm {
-    @apply bg-card/30 backdrop-blur-md border border-border/40 shadow-md shadow-black/10;
+    @apply bg-card/40 backdrop-blur-lg border border-border/40 shadow-none;
   }
 
   .btn-glow {
-    @apply shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow duration-300;
+    @apply shadow-none hover:shadow-lg hover:shadow-primary/15 transition-all duration-300;
   }
 
   .card-gradient {
-    @apply bg-gradient-to-br from-white/5 via-white/2 to-transparent;
+    @apply bg-gradient-to-br from-white/8 via-white/3 to-transparent;
+  }
+
+  .modern-card {
+    @apply bg-card border border-border rounded-lg shadow-none hover:border-border/80 transition-colors;
+  }
+
+  .modern-input {
+    @apply bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary/20 rounded-md;
   }
 
   .animate-spin-slow {
@@ -92,16 +100,16 @@
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-6px); }
+    50% { transform: translateY(-4px); }
   }
 
   .animate-pulse-subtle {
-    animation: pulse-subtle 2s ease-in-out infinite;
+    animation: pulse-subtle 2.5s ease-in-out infinite;
   }
 
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.9; }
+    50% { opacity: 0.85; }
   }
 }
 

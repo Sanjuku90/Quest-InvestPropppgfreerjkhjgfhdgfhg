@@ -55,49 +55,49 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-background">
       {/* Left Panel - Hero */}
-      <div className="hidden lg:flex flex-col justify-center items-center relative overflow-hidden p-12 text-center">
-        {/* Subtle gradient background */}
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-900/20 to-teal-900/10" />
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px]" />
+      <div className="hidden lg:flex flex-col justify-center items-center relative overflow-hidden p-16 text-center">
+        {/* Minimal gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/5" />
+        <div className="absolute top-[-30%] right-[-20%] w-[800px] h-[800px] rounded-full bg-primary/8 blur-[150px]" />
+        <div className="absolute bottom-[-30%] left-[-20%] w-[600px] h-[600px] rounded-full bg-accent/8 blur-[150px]" />
         
-        <div className="relative z-10 max-w-lg">
-          <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-xl mx-auto mb-8 flex items-center justify-center shadow-xl shadow-primary/25">
-            <TrendingUp className="w-8 h-8 text-white" />
+        <div className="relative z-10 max-w-xl">
+          <div className="w-14 h-14 bg-gradient-to-br from-primary to-accent rounded-lg mx-auto mb-8 flex items-center justify-center">
+            <TrendingUp className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-5xl font-bold font-display text-foreground mb-6 leading-tight">
-            Invest Smart.<br/>Complete <span className="text-gradient-primary">Quests.</span> Earn More.
+          <h1 className="text-6xl font-bold font-display text-foreground mb-6 leading-tight">
+            Invest Smart. <span className="text-gradient-primary">Complete Quests.</span> Earn.
           </h1>
           <p className="text-lg text-muted-foreground leading-relaxed">
-            Join a community of forward-thinking investors who transform daily goals into meaningful returns. 
-            Level up your financial game with QuestInvest Pro.
+            Transform daily goals into real investment returns. Join forward-thinking investors who turn tasks into meaningful profits with QuestInvest Pro.
           </p>
         </div>
       </div>
 
       {/* Right Panel - Auth Form */}
-      <div className="flex items-center justify-center p-6 bg-background">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex items-center justify-center p-6">
+        <div className="w-full max-w-md space-y-6">
           {/* Mobile Header */}
-          <div className="text-center lg:hidden mb-8">
-             <div className="w-12 h-12 bg-primary rounded-lg mx-auto mb-4 flex items-center justify-center">
-               <TrendingUp className="w-6 h-6 text-white" />
+          <div className="text-center lg:hidden mb-6">
+             <div className="w-10 h-10 bg-primary rounded-lg mx-auto mb-3 flex items-center justify-center">
+               <TrendingUp className="w-5 h-5 text-white" />
              </div>
-             <h1 className="text-2xl font-bold font-display">QuestInvest Pro</h1>
-             <p className="text-sm text-muted-foreground mt-2">Smart investing starts here</p>
+             <h1 className="text-2xl font-bold font-display">QuestInvest</h1>
+             <p className="text-xs text-muted-foreground mt-1">Smart investing platform</p>
           </div>
 
-          <Card className="glass-card">
+          <Card className="modern-card border-border/60">
             <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="w-full">
-              <CardHeader>
-                <TabsList className="grid w-full grid-cols-2 bg-muted/40">
-                  <TabsTrigger value="login">Login</TabsTrigger>
-                  <TabsTrigger value="register">Register</TabsTrigger>
+              <CardHeader className="pb-3">
+                <TabsList className="grid w-full grid-cols-2 bg-muted/30 p-1">
+                  <TabsTrigger value="login" className="text-sm">Login</TabsTrigger>
+                  <TabsTrigger value="register" className="text-sm">Register</TabsTrigger>
                 </TabsList>
               </CardHeader>
               
-              <CardContent className="space-y-4 pt-4">
+              <CardContent className="space-y-4 pt-2">
                 <TabsContent value="login">
                   <LoginForm onSubmit={onLogin} isLoading={loginMutation.isPending} error={loginMutation.error} />
                 </TabsContent>
@@ -109,8 +109,8 @@ export default function AuthPage() {
             </Tabs>
           </Card>
           
-          <p className="text-center text-xs text-muted-foreground/80 px-8">
-            By continuing, you agree to our <span className="text-foreground/60">Terms of Service</span> and <span className="text-foreground/60">Privacy Policy</span>
+          <p className="text-center text-xs text-muted-foreground px-6">
+            By continuing, you agree to our <span className="text-foreground/70">Terms</span> and <span className="text-foreground/70">Privacy Policy</span>
           </p>
         </div>
       </div>
