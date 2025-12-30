@@ -217,24 +217,29 @@ export async function registerRoutes(
     if (!game) return res.status(404).json({ message: "Aucun jeu en cours" });
 
     // Logic by difficulty
-    // Easy: 2/3 win (66.6%)
-    // Medium: 1/2 win (50%)
-    // Risky: 1/3 win (33.3%)
     const rand = Math.random();
     let outcome: "gain" | "loss" | "trap";
     
+    console.log(`[CHEST GAME] User ${user.id} opening chest - Difficulty: ${game.difficulty}, Roll: ${rand.toFixed(4)}`);
+
     if (game.difficulty === "easy") {
-      if (rand < 0.66) outcome = "gain";
+      // 50% gain, 25% loss, 25% trap (More balanced than before)
+      if (rand < 0.5) outcome = "gain";
+      else if (rand < 0.75) outcome = "loss";
       else outcome = "trap";
     } else if (game.difficulty === "medium") {
-      if (rand < 0.5) outcome = "gain";
-      else if (rand < 0.8) outcome = "loss";
+      // 40% gain, 30% loss, 30% trap
+      if (rand < 0.4) outcome = "gain";
+      else if (rand < 0.7) outcome = "loss";
       else outcome = "trap";
     } else { // Risky
-      if (rand < 0.33) outcome = "gain";
-      else if (rand < 0.6) outcome = "loss";
+      // 30% gain, 20% loss, 50% trap
+      if (rand < 0.3) outcome = "gain";
+      else if (rand < 0.5) outcome = "loss";
       else outcome = "trap";
     }
+
+    console.log(`[CHEST GAME] Outcome: ${outcome}`);
 
     if (outcome === "trap") {
       await storage.updateChestGame(game.id, { status: "lost" });
