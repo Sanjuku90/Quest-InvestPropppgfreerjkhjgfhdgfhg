@@ -1,5 +1,11 @@
 import { z } from 'zod';
 import { insertUserSchema, users, dailyQuests, transactions } from './schema';
+export type { InsertUser } from './schema';
+
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
 
 export const errorSchemas = {
   validation: z.object({

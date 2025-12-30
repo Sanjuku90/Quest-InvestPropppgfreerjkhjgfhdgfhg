@@ -1,4 +1,5 @@
-import { User, InsertUser, Quest, Transaction, InsertTransaction, users, dailyQuests, transactions } from "@shared/schema";
+import { User, InsertUser, Quest, Transaction, users, dailyQuests, transactions } from "@shared/schema";
+import type { InsertTransaction } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 

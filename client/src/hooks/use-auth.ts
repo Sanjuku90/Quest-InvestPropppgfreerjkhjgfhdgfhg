@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, type LoginRequest, type InsertUser } from "@shared/routes";
+import { api } from "@shared/routes";
+import type { LoginRequest, InsertUser } from "@shared/routes";
+import type { InsertUser as InsertUserType } from "@shared/schema";
 
 export function useUser() {
   return useQuery({

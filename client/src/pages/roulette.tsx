@@ -21,7 +21,7 @@ export default function RoulettePage() {
     if (isSpinning) return;
     
     // Check if user has bonus to unlock
-    if (user.bonusBalance <= 0) {
+    if ((user.bonusBalance ?? 0) <= 0) {
       toast({
         title: "No Bonus Available",
         description: "You need a locked bonus balance to play.",
@@ -88,7 +88,7 @@ export default function RoulettePage() {
         <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 border border-secondary/30">
           <Lock className="w-4 h-4 text-secondary" />
           <span className="text-secondary font-mono font-bold">
-            Locked Balance: {user.bonusBalance.toLocaleString()} XOF
+            Locked Balance: {(user.bonusBalance ?? 0).toLocaleString()} XOF
           </span>
         </div>
       </div>
@@ -120,13 +120,13 @@ export default function RoulettePage() {
           size="lg" 
           className="text-lg px-12 py-6 rounded-full font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all hover:scale-105"
           onClick={handleSpin}
-          disabled={isSpinning || user.bonusBalance <= 0}
+          disabled={isSpinning || (user.bonusBalance ?? 0) <= 0}
         >
           {isSpinning ? <Loader2 className="animate-spin mr-2" /> : null}
           {isSpinning ? "Spinning..." : "SPIN TO UNLOCK"}
         </Button>
 
-        {user.bonusBalance <= 0 && (
+        {(user.bonusBalance ?? 0) <= 0 && (
           <p className="text-sm text-destructive">
             You need a bonus balance to play.
           </p>

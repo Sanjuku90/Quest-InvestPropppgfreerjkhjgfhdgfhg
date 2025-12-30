@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   if (!user) return null;
 
-  const isBonusReady = user.isBonusUnlocked || user.walletBalance > 0;
+  const isBonusReady = user.isBonusUnlocked || (user.walletBalance ?? 0) > 0;
 
   return (
     <div className="space-y-8">
@@ -42,21 +42,21 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Investment Balance"
-          value={`${user.investmentBalance.toLocaleString()} XOF`}
+          value={`${(user.investmentBalance ?? 0).toLocaleString()} XOF`}
           icon={TrendingUp}
           gradient="from-blue-600/20 to-cyan-400/10"
           className="border-blue-500/20"
         />
         <StatCard
           title="Locked Bonus"
-          value={`${user.bonusBalance.toLocaleString()} XOF`}
+          value={`${(user.bonusBalance ?? 0).toLocaleString()} XOF`}
           icon={Lock}
           gradient="from-purple-600/20 to-pink-400/10"
           className="border-purple-500/20"
         />
         <StatCard
           title="Withdrawable Balance"
-          value={`${user.walletBalance.toLocaleString()} XOF`}
+          value={`${(user.walletBalance ?? 0).toLocaleString()} XOF`}
           icon={Wallet}
           gradient="from-emerald-600/20 to-green-400/10"
           className="border-emerald-500/20"

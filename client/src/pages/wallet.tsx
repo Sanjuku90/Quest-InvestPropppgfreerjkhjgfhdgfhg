@@ -42,7 +42,7 @@ export default function WalletPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <StatCard
           title="Total Balance"
-          value={`${(user.walletBalance + user.investmentBalance).toLocaleString()} XOF`}
+          value={`${((user.walletBalance ?? 0) + (user.investmentBalance ?? 0)).toLocaleString()} XOF`}
           icon={Wallet}
           gradient="from-primary/20 to-orange-500/10"
           className="border-primary/20 md:col-span-2"
@@ -52,7 +52,7 @@ export default function WalletPage() {
            <div className="flex items-center justify-between">
              <div>
                <p className="text-sm font-medium text-muted-foreground mb-1">Withdrawable</p>
-               <p className="text-2xl font-mono font-bold">{user.walletBalance.toLocaleString()} XOF</p>
+               <p className="text-2xl font-mono font-bold">{(user.walletBalance ?? 0).toLocaleString()} XOF</p>
              </div>
              <div className="p-3 bg-green-500/10 rounded-full text-green-500">
                <ArrowUpRight size={24} />
@@ -61,7 +61,7 @@ export default function WalletPage() {
            <WithdrawDialog 
              open={openWithdraw} 
              onOpenChange={setOpenWithdraw} 
-             maxAmount={user.walletBalance} 
+             maxAmount={user.walletBalance ?? 0} 
            />
         </div>
 
@@ -69,7 +69,7 @@ export default function WalletPage() {
            <div className="flex items-center justify-between">
              <div>
                <p className="text-sm font-medium text-muted-foreground mb-1">Investment</p>
-               <p className="text-2xl font-mono font-bold">{user.investmentBalance.toLocaleString()} XOF</p>
+               <p className="text-2xl font-mono font-bold">{(user.investmentBalance ?? 0).toLocaleString()} XOF</p>
              </div>
              <div className="p-3 bg-blue-500/10 rounded-full text-blue-500">
                <ArrowDownLeft size={24} />

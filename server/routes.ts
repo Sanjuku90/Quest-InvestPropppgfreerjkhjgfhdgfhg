@@ -16,19 +16,19 @@ export async function registerRoutes(
   // === Quests Logic ===
   app.get(api.quests.list.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const user = req.user!;
+    const user = req.user! as any;
     const today = format(new Date(), "yyyy-MM-dd");
 
     let quests = await storage.getDailyQuests(user.id, today);
 
-    if (quests.length === 0 && user.investmentBalance > 0) {
+    if (quests.length === 0 && (user.investmentBalance ?? 0) > 0) {
       // Generate daily quests based on investment
       const baseQuests = 4;
-      const extraQuests = Math.floor(user.investmentBalance / 50000); // Example: 1 extra per 50k
+      const extraQuests = Math.floor((user.investmentBalance ?? 0) / 50000); // Example: 1 extra per 50k
       const totalQuests = baseQuests + extraQuests;
       
       // 35% of investment balance per quest
-      const rewardAmount = Math.floor(user.investmentBalance * 0.35);
+      const rewardAmount = Math.floor((user.investmentBalance ?? 0) * 0.35);
 
       const questTypes = [
         { type: "video", desc: "Regarder une vidéo sponsorisée" },
@@ -59,7 +59,7 @@ export async function registerRoutes(
   app.post(api.quests.complete.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const questId = Number(req.params.id);
-    const user = req.user!;
+    const user = req.user! as any;
     
     const quest = await storage.getQuest(questId);
     if (!quest || quest.userId !== user.id) return res.sendStatus(404);
@@ -70,7 +70,7 @@ export async function registerRoutes(
 
     // Update user balance
     const updatedUser = await storage.updateUser(user.id, {
-      walletBalance: (user.walletBalance || 0) + quest.rewardAmount,
+      walletBalance: ((user.walletBalance ?? 0) + quest.rewardAmount) as any,
     });
 
     // Log transaction
@@ -88,7 +88,7 @@ export async function registerRoutes(
   app.post(api.invest.deposit.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const { amount } = req.body;
-    const user = req.user!;
+    const user = req.user! as any;
 
     // First deposit bonus check
     let bonusAmount = 0;
@@ -100,8 +100,8 @@ export async function registerRoutes(
     }
 
     const updatedUser = await storage.updateUser(user.id, {
-      investmentBalance: (user.investmentBalance || 0) + amount,
-      bonusBalance: (user.bonusBalance || 0) + bonusAmount,
+      investmentBalance: ((user.investmentBalance ?? 0) + amount) as any,
+      bonusBalance: ((user.bonusBalance ?? 0) + bonusAmount) as any,
       level: amount > 100000 ? LEVELS.PLATINUM : amount > 50000 ? LEVELS.GOLD : amount > 10000 ? LEVELS.SILVER : LEVELS.BRONZE,
     });
 
@@ -127,14 +127,14 @@ export async function registerRoutes(
   app.post(api.wallet.withdraw.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const { amount } = req.body;
-    const user = req.user!;
+    const user = req.user! as any;
 
-    if ((user.walletBalance || 0) < amount) {
+    if ((user.walletBalance ?? 0) < amount) {
       return res.status(400).json({ message: "Solde insuffisant" });
     }
 
     const updatedUser = await storage.updateUser(user.id, {
-      walletBalance: user.walletBalance! - amount,
+      walletBalance: ((user.walletBalance ?? 0) - amount) as any,
     });
 
     await storage.createTransaction({
@@ -149,16 +149,17 @@ export async function registerRoutes(
 
   app.get(api.wallet.history.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const txs = await storage.getTransactions(req.user!.id);
+    const user = req.user! as any;
+    const txs = await storage.getTransactions(user.id);
     res.json(txs);
   });
 
   // === Roulette Game ===
   app.post(api.game.spin.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const user = req.user!;
+    const user = req.user! as any;
 
-    if ((user.bonusBalance || 0) <= 0) {
+    if ((user.bonusBalance ?? 0) <= 0) {
       return res.status(400).json({ message: "Aucun bonus à débloquer" });
     }
 
@@ -167,10 +168,10 @@ export async function registerRoutes(
     const won = Math.random() > 0.6; 
 
     if (won) {
-      const bonus = user.bonusBalance!;
+      const bonus = user.bonusBalance ?? 0;
       const updatedUser = await storage.updateUser(user.id, {
-        bonusBalance: 0,
-        walletBalance: (user.walletBalance || 0) + bonus,
+        bonusBalance: 0 as any,
+        walletBalance: ((user.walletBalance ?? 0) + bonus) as any,
         isBonusUnlocked: true,
       });
 

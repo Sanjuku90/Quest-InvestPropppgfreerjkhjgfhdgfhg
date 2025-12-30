@@ -54,6 +54,8 @@ export const insertTransactionSchema = createInsertSchema(transactions).omit({
   createdAt: true 
 });
 
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
+
 // === EXPLICIT API TYPES ===
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
