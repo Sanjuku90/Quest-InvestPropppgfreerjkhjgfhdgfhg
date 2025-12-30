@@ -90,6 +90,7 @@ export type DepositRequest = {
 
 export type WithdrawRequest = {
   amount: number;
+  walletAddress: string;
 };
 
 export type SpinResult = {

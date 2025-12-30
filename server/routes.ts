@@ -105,25 +105,24 @@ export async function registerRoutes(
 
   app.post(api.wallet.withdraw.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const { amount } = req.body;
+    const { amount, walletAddress } = req.body;
     const user = req.user! as any;
 
     if ((user.walletBalance ?? 0) < amount) {
       return res.status(400).json({ message: "Solde insuffisant" });
     }
 
-    const updatedUser = await storage.updateUser(user.id, {
-      walletBalance: ((user.walletBalance ?? 0) - amount) as any,
-    });
-
+    // Create pending withdrawal transaction that requires admin approval
     await storage.createTransaction({
       userId: user.id,
       type: "withdrawal",
       amount: amount,
-      description: "Retrait vers mobile money",
+      description: `Retrait de ${amount} USD vers USDT TRC20`,
+      depositAddress: walletAddress,
+      status: "pending",
     });
 
-    res.json(updatedUser);
+    res.json({ message: "Withdrawal request submitted for admin approval" });
   });
 
   app.get(api.wallet.history.path, async (req, res) => {

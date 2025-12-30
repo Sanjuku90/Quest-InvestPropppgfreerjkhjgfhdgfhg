@@ -162,16 +162,17 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
     amount: z.coerce.number()
       .min(1000, "Minimum withdrawal is 1000 USD")
       .max(maxAmount, "Insufficient funds"),
+    walletAddress: z.string().min(1, "USDT TRC20 wallet address is required"),
   });
   
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<{ amount: number }>({
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<{ amount: number; walletAddress: string }>({
     resolver: zodResolver(schema)
   });
 
-  const onSubmit = async (data: { amount: number }) => {
+  const onSubmit = async (data: { amount: number; walletAddress: string }) => {
     try {
-      await withdrawMutation.mutateAsync(data.amount);
-      toast({ title: "Success", description: "Withdrawal processed" });
+      await withdrawMutation.mutateAsync(data);
+      toast({ title: "Success", description: "Withdrawal request submitted for admin approval" });
       onOpenChange(false);
       reset();
     } catch (error) {
@@ -188,10 +189,19 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
         <DialogHeader>
           <DialogTitle>Withdraw Funds</DialogTitle>
           <DialogDescription>
-            Transfer funds to your external account. Min: 1000 USD.
+            Transfer funds to your USDT TRC20 wallet. Minimum: 1000 USD.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>USDT TRC20 Wallet Address</Label>
+            <Input 
+              type="text" 
+              placeholder="TN9hjFHzszNdAk5n8Wt39X6KN72WaNmJM1" 
+              {...register("walletAddress")}
+            />
+            {errors.walletAddress && <p className="text-xs text-destructive">{errors.walletAddress.message}</p>}
+          </div>
           <div className="space-y-2">
             <Label>Amount (USD)</Label>
             <Input type="number" placeholder="1000" {...register("amount")} />
@@ -200,7 +210,7 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
           </div>
           <Button type="submit" className="w-full" disabled={withdrawMutation.isPending}>
             {withdrawMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
-            Confirm Withdrawal
+            Submit for Approval
           </Button>
         </form>
       </DialogContent>

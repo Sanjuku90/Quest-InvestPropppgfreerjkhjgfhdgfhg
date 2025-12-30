@@ -25,11 +25,11 @@ export function useDeposit() {
 export function useWithdraw() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (amount: number) => {
+    mutationFn: async (data: { amount: number; walletAddress: string }) => {
       const res = await fetch(api.wallet.withdraw.path, {
         method: api.wallet.withdraw.method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Withdrawal failed");
       return api.wallet.withdraw.responses[200].parse(await res.json());
