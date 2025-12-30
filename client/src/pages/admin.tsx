@@ -112,9 +112,16 @@ export default function AdminPage() {
                 </div>
               </div>
 
+              {tx.depositAddress && (
+                <div className="p-3 rounded-lg bg-muted/40 space-y-2">
+                  <p className="text-xs text-muted-foreground font-medium">Deposit Address</p>
+                  <p className="text-sm font-mono break-all">{tx.depositAddress}</p>
+                </div>
+              )}
+
               {tx.description && (
                 <div className="p-3 rounded-lg bg-muted/40">
-                  <p className="text-sm">{tx.description}</p>
+                  <p className="text-sm text-muted-foreground">{tx.description}</p>
                 </div>
               )}
 

@@ -6,11 +6,11 @@ import { api, buildUrl } from "@shared/routes";
 export function useDeposit() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (amount: number) => {
+    mutationFn: async (data: { amount: number; depositAddress: string }) => {
       const res = await fetch(api.invest.deposit.path, {
         method: api.invest.deposit.method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
+        body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Deposit failed");
       return api.invest.deposit.responses[200].parse(await res.json());

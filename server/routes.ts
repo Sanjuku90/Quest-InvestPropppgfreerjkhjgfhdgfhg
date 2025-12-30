@@ -87,41 +87,20 @@ export async function registerRoutes(
   // === Investment & Wallet ===
   app.post(api.invest.deposit.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    const { amount } = req.body;
+    const { amount, depositAddress } = req.body;
     const user = req.user! as any;
 
-    // First deposit bonus check
-    let bonusAmount = 0;
-    const transactions = await storage.getTransactions(user.id);
-    const hasDeposited = transactions.some(t => t.type === "deposit");
-    
-    if (!hasDeposited) {
-      bonusAmount = Math.floor(amount * 0.40); // 40% bonus
-    }
-
-    const updatedUser = await storage.updateUser(user.id, {
-      investmentBalance: ((user.investmentBalance ?? 0) + amount) as any,
-      bonusBalance: ((user.bonusBalance ?? 0) + bonusAmount) as any,
-      level: amount > 100000 ? LEVELS.PLATINUM : amount > 50000 ? LEVELS.GOLD : amount > 10000 ? LEVELS.SILVER : LEVELS.BRONZE,
-    });
-
+    // Create pending deposit transaction that requires admin approval
     await storage.createTransaction({
       userId: user.id,
       type: "deposit",
       amount: amount,
-      description: "Dépôt initial",
+      description: `Dépôt de ${amount} XOF`,
+      depositAddress: depositAddress,
+      status: "pending",
     });
 
-    if (bonusAmount > 0) {
-      await storage.createTransaction({
-        userId: user.id,
-        type: "bonus_locked",
-        amount: bonusAmount,
-        description: "Bonus premier dépôt (bloqué)",
-      });
-    }
-
-    res.json(updatedUser);
+    res.json({ message: "Deposit submitted for admin approval" });
   });
 
   app.post(api.wallet.withdraw.path, async (req, res) => {

@@ -35,6 +35,7 @@ export const transactions = pgTable("transactions", {
   description: text("description"),
   status: text("status").default("pending"), // pending, approved, rejected
   adminNote: text("admin_note"),
+  depositAddress: text("deposit_address"), // Wallet address for deposits
   createdAt: timestamp("created_at").defaultNow(),
 });
 

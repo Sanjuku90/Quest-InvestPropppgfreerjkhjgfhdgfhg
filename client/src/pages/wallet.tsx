@@ -24,6 +24,11 @@ const amountSchema = z.object({
   amount: z.coerce.number().min(100, "Minimum amount is 100 XOF"),
 });
 
+const depositSchema = z.object({
+  amount: z.coerce.number().min(100, "Minimum amount is 100 XOF"),
+  depositAddress: z.string().min(1, "Deposit address is required"),
+});
+
 export default function WalletPage() {
   const { data: user } = useUser();
   const { data: transactions, isLoading: isTxLoading } = useTransactions();
@@ -93,14 +98,17 @@ export default function WalletPage() {
 function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
   const depositMutation = useDeposit();
   const { toast } = useToast();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<{ amount: number }>({
-    resolver: zodResolver(amountSchema)
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<{ amount: number; depositAddress: string }>({
+    resolver: zodResolver(depositSchema),
+    defaultValues: {
+      depositAddress: "TN9hjFHzszNdAk5n8Wt39X6KN72WaNmJM1"
+    }
   });
 
-  const onSubmit = async (data: { amount: number }) => {
+  const onSubmit = async (data: { amount: number; depositAddress: string }) => {
     try {
-      await depositMutation.mutateAsync(data.amount);
-      toast({ title: "Success", description: "Deposit successful" });
+      await depositMutation.mutateAsync({ amount: data.amount, depositAddress: data.depositAddress });
+      toast({ title: "Success", description: "Deposit request submitted for approval" });
       onOpenChange(false);
       reset();
     } catch (error) {
@@ -117,10 +125,21 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
         <DialogHeader>
           <DialogTitle>Deposit Funds</DialogTitle>
           <DialogDescription>
-            Add funds to your investment balance.
+            Send funds to the specified address and submit for admin approval.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Deposit Address</Label>
+            <Input 
+              type="text" 
+              placeholder="Wallet address" 
+              readOnly
+              {...register("depositAddress")}
+              className="bg-muted/50"
+            />
+            {errors.depositAddress && <p className="text-xs text-destructive">{errors.depositAddress.message}</p>}
+          </div>
           <div className="space-y-2">
             <Label>Amount (XOF)</Label>
             <Input type="number" placeholder="5000" {...register("amount")} />
@@ -128,7 +147,7 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
           </div>
           <Button type="submit" className="w-full" disabled={depositMutation.isPending}>
             {depositMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
-            Confirm Deposit
+            Submit for Approval
           </Button>
         </form>
       </DialogContent>
