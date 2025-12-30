@@ -188,5 +188,19 @@ export async function registerRoutes(
     }
   });
 
+  // === Leaderboard ===
+  app.get(api.leaderboard.list.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    const leaders = await storage.getLeaderboard();
+    const withTotals = leaders.map(leader => ({
+      ...leader,
+      referralEarnings: 0,
+      totalEarnings: (leader.investmentBalance || 0),
+    }));
+    
+    res.json(withTotals.sort((a, b) => b.investmentBalance - a.investmentBalance));
+  });
+
   return httpServer;
 }

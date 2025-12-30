@@ -124,6 +124,23 @@ export const api = {
       },
     },
   },
+  leaderboard: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/leaderboard',
+      responses: {
+        200: z.array(z.object({
+          id: z.number(),
+          fullName: z.string().nullable(),
+          level: z.string(),
+          investmentBalance: z.number(),
+          walletBalance: z.number(),
+          referralEarnings: z.number(),
+          totalEarnings: z.number(),
+        })),
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {

@@ -18,6 +18,9 @@ export interface IStorage {
   // Transactions
   createTransaction(tx: InsertTransaction): Promise<Transaction>;
   getTransactions(userId: number): Promise<Transaction[]>;
+
+  // Leaderboard
+  getLeaderboard(): Promise<Array<any>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -67,6 +70,16 @@ export class DatabaseStorage implements IStorage {
 
   async getTransactions(userId: number): Promise<Transaction[]> {
     return db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(transactions.createdAt);
+  }
+
+  async getLeaderboard(): Promise<Array<any>> {
+    return db.select({
+      id: users.id,
+      fullName: users.fullName,
+      level: users.level,
+      investmentBalance: users.investmentBalance,
+      walletBalance: users.walletBalance,
+    }).from(users).orderBy(users.investmentBalance);
   }
 }
 

@@ -88,3 +88,13 @@ export const LEVELS = {
   GOLD: "Gold",
   PLATINUM: "Platinum",
 } as const;
+
+export type Leaderboard = {
+  id: number;
+  fullName: string | null;
+  level: string;
+  investmentBalance: number;
+  walletBalance: number;
+  referralEarnings: number;
+  totalEarnings: number;
+};

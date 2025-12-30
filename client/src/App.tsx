@@ -1,4 +1,5 @@
 import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,11 +14,18 @@ import DashboardPage from "@/pages/dashboard";
 import QuestsPage from "@/pages/quests";
 import RoulettePage from "@/pages/roulette";
 import WalletPage from "@/pages/wallet";
+import LeaderboardPage from "@/pages/leaderboard";
 
 // Protected Route Wrapper
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { data: user, isLoading } = useUser();
   const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation("/auth");
+    }
+  }, [user, isLoading, setLocation]);
 
   if (isLoading) {
     return (
@@ -28,7 +36,6 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   }
 
   if (!user) {
-    setLocation("/auth");
     return null;
   }
 
@@ -56,6 +63,9 @@ function Router() {
       </Route>
       <Route path="/wallet">
         {() => <ProtectedRoute component={WalletPage} />}
+      </Route>
+      <Route path="/leaderboard">
+        {() => <ProtectedRoute component={LeaderboardPage} />}
       </Route>
 
       <Route component={NotFound} />

@@ -7,7 +7,8 @@ import {
   Target, 
   LogOut, 
   Menu,
-  X 
+  X,
+  Trophy
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     { href: "/quests", label: "Daily Quests", icon: Target },
     { href: "/roulette", label: "Lucky Wheel", icon: Gamepad2 },
     { href: "/wallet", label: "Wallet", icon: Wallet },
+    { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   ];
 
   if (!user) return <div className="min-h-screen bg-background">{children}</div>;
