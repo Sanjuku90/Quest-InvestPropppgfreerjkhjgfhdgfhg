@@ -216,13 +216,25 @@ export async function registerRoutes(
 
     if (!game) return res.status(404).json({ message: "Aucun jeu en cours" });
 
-    // Game logic: 10% trap, 20% loss, 70% gain
+    // Logic by difficulty
+    // Easy: 2/3 win (66.6%)
+    // Medium: 1/2 win (50%)
+    // Risky: 1/3 win (33.3%)
     const rand = Math.random();
     let outcome: "gain" | "loss" | "trap";
     
-    if (rand < 0.1) outcome = "trap";
-    else if (rand < 0.3) outcome = "loss";
-    else outcome = "gain";
+    if (game.difficulty === "easy") {
+      if (rand < 0.66) outcome = "gain";
+      else outcome = "trap";
+    } else if (game.difficulty === "medium") {
+      if (rand < 0.5) outcome = "gain";
+      else if (rand < 0.8) outcome = "loss";
+      else outcome = "trap";
+    } else { // Risky
+      if (rand < 0.33) outcome = "gain";
+      else if (rand < 0.6) outcome = "loss";
+      else outcome = "trap";
+    }
 
     if (outcome === "trap") {
       await storage.updateChestGame(game.id, { status: "lost" });
@@ -239,7 +251,8 @@ export async function registerRoutes(
     }
 
     // Gain
-    const newMultiplier = (parseFloat(game.currentMultiplier) + 0.3).toFixed(1);
+    const multiplierStep = game.difficulty === "easy" ? 0.2 : (game.difficulty === "medium" ? 0.4 : 0.8);
+    const newMultiplier = (parseFloat(game.currentMultiplier) + multiplierStep).toFixed(1);
     const updatedGame = await storage.updateChestGame(game.id, { 
       currentMultiplier: newMultiplier,
       chestsOpened: game.chestsOpened + 1

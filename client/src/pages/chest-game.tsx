@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Lock, Unlock, TrendingUp, AlertTriangle } from "lucide-react";
+import { Package, Lock, Unlock, TrendingUp, AlertTriangle, Sparkles, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function ChestGame() {
@@ -13,14 +13,8 @@ export default function ChestGame() {
   const { toast } = useToast();
   const [stake, setStake] = useState(10);
   const [difficulty, setDifficulty] = useState("easy");
-
-  const { data: activeGame, isLoading } = useQuery({
-    queryKey: ["/api/game/chest/active"],
-    queryFn: async () => {
-      // We don't have a direct GET active endpoint, but we can check via start attempt or just use the mutation state
-      return null; 
-    }
-  });
+  const [lastOutcome, setLastOutcome] = useState<null | "gain" | "loss" | "trap">(null);
+  const [openingChestId, setOpeningChestId] = useState<number | null>(null);
 
   const startMutation = useMutation({
     mutationFn: async () => {
@@ -30,25 +24,20 @@ export default function ChestGame() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/game/chest/active"] });
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "Jeu démarré", description: `Mise de ${stake} USD acceptée.` });
+      setLastOutcome(null);
     },
-    onError: (error: Error) => {
-      toast({ title: "Erreur", description: error.message, variant: "destructive" });
-    }
   });
 
   const openMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: number) => {
+      setOpeningChestId(id);
       const res = await apiRequest("POST", "/api/game/chest/open");
       return res.json();
     },
     onSuccess: (data) => {
+      setLastOutcome(data.outcome);
       queryClient.setQueryData(["/api/game/chest/active"], data.game);
-      if (data.outcome === "trap") {
-        toast({ title: "PERDU", description: data.message, variant: "destructive" });
-      } else {
-        toast({ title: data.outcome === "gain" ? "BRAVO" : "ATTENTION", description: data.message });
-      }
+      setTimeout(() => setOpeningChestId(null), 1000);
     }
   });
 
@@ -63,6 +52,15 @@ export default function ChestGame() {
       queryClient.invalidateQueries({ queryKey: ["/api/wallet/history"] });
       toast({ title: "Encaissé", description: data.message });
     }
+  });
+
+  const activeGameQuery = useQuery({
+    queryKey: ["/api/game/chest/active"],
+    queryFn: async () => {
+      // Logic to fetch active game if exists (handled by back returning null if none)
+      return null; 
+    },
+    enabled: false
   });
 
   const game = startMutation.data || openMutation.data?.game;
@@ -80,7 +78,6 @@ export default function ChestGame() {
             </p>
           </div>
         </div>
-        <p className="text-muted-foreground">Misez, ouvrez des coffres et multipliez vos gains. Attention aux pièges !</p>
       </div>
 
       {!isPlaying ? (
@@ -135,19 +132,36 @@ export default function ChestGame() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="glass-card">
               <CardContent className="pt-6 text-center">
-                <p className="text-sm text-muted-foreground">Mise Initiale</p>
+                <p className="text-sm text-muted-foreground">Mise</p>
                 <p className="text-2xl font-bold">${game.stake}</p>
               </CardContent>
             </Card>
-            <Card className="glass-card border-primary/50">
-              <CardContent className="pt-6 text-center">
-                <p className="text-sm text-muted-foreground">Multiplicateur Actuel</p>
-                <p className="text-4xl font-bold text-primary">x{game.currentMultiplier}</p>
+            <Card className="glass-card border-primary/50 overflow-hidden relative">
+              <CardContent className="pt-6 text-center z-10">
+                <p className="text-sm text-muted-foreground">Multiplicateur</p>
+                <motion.p 
+                  key={game.currentMultiplier}
+                  initial={{ scale: 1.5, color: "#3b82f6" }}
+                  animate={{ scale: 1, color: "hsl(var(--primary))" }}
+                  className="text-4xl font-bold"
+                >
+                  x{game.currentMultiplier}
+                </motion.p>
               </CardContent>
+              <AnimatePresence>
+                {lastOutcome === "gain" && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 bg-primary/10 pointer-events-none"
+                  />
+                )}
+              </AnimatePresence>
             </Card>
             <Card className="glass-card">
               <CardContent className="pt-6 text-center">
-                <p className="text-sm text-muted-foreground">Gain Potentiel</p>
+                <p className="text-sm text-muted-foreground">Gain Actuel</p>
                 <p className="text-2xl font-bold text-accent">${Math.floor(game.stake * parseFloat(game.currentMultiplier))}</p>
               </CardContent>
             </Card>
@@ -157,27 +171,66 @@ export default function ChestGame() {
             {[1, 2, 3].map((i) => (
               <motion.div
                 key={i}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={!openingChestId ? { scale: 1.05 } : {}}
+                whileTap={!openingChestId ? { scale: 0.95 } : {}}
                 className="cursor-pointer"
-                onClick={() => !openMutation.isPending && openMutation.mutate()}
+                onClick={() => !openingChestId && openMutation.mutate(i)}
               >
-                <Card className="aspect-square flex items-center justify-center glass-card hover:border-primary transition-colors">
-                  <Package className="w-16 h-16 text-primary animate-float" />
+                <Card className={`aspect-square flex flex-col items-center justify-center glass-card transition-all duration-500 ${openingChestId === i ? "border-primary shadow-[0_0_30px_rgba(59,130,246,0.5)]" : ""}`}>
+                  <AnimatePresence mode="wait">
+                    {openingChestId === i ? (
+                      <motion.div
+                        key="opening"
+                        initial={{ rotateY: 0 }}
+                        animate={{ rotateY: 180 }}
+                        transition={{ duration: 0.5, repeat: Infinity }}
+                      >
+                        <Package className="w-16 h-16 text-primary" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="idle"
+                        initial={{ scale: 1 }}
+                        className="flex flex-col items-center gap-2"
+                      >
+                        <Package className="w-16 h-16 text-primary/40" />
+                        <span className="text-xs text-muted-foreground font-mono">Coffre {i}</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </Card>
               </motion.div>
             ))}
           </div>
 
+          <AnimatePresence>
+            {lastOutcome && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className={`p-4 rounded-lg flex items-center justify-center gap-3 font-bold border ${
+                  lastOutcome === "gain" ? "bg-accent/10 border-accent text-accent" : 
+                  lastOutcome === "loss" ? "bg-amber-500/10 border-amber-500 text-amber-500" :
+                  "bg-destructive/10 border-destructive text-destructive"
+                }`}
+              >
+                {lastOutcome === "gain" ? <Sparkles /> : <XCircle />}
+                {lastOutcome === "gain" ? "Gagné ! Le multiplicateur s'envole." : 
+                 lastOutcome === "loss" ? "Aïe ! Le multiplicateur baisse." : "BOUM ! C'était un piège."}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <div className="flex gap-4">
             <Button 
-              variant="outline" 
+              variant="default" 
               size="lg" 
-              className="flex-1"
+              className="flex-1 btn-glow"
               onClick={() => cashoutMutation.mutate()}
               disabled={cashoutMutation.isPending}
             >
-              Encaisser ${Math.floor(game.stake * parseFloat(game.currentMultiplier))}
+              Sécuriser ${Math.floor(game.stake * parseFloat(game.currentMultiplier))}
             </Button>
           </div>
         </div>
@@ -185,15 +238,24 @@ export default function ChestGame() {
 
       <Card className="bg-muted/30">
         <CardContent className="pt-6 space-y-4">
-          <div className="flex items-center gap-2 text-amber-500">
-            <AlertTriangle className="w-4 h-4" />
-            <h3 className="font-bold">Règles du Jeu</h3>
+          <div className="flex items-center gap-2 text-primary">
+            <TrendingUp className="w-4 h-4" />
+            <h3 className="font-bold">Niveaux de Difficulté</h3>
           </div>
-          <ul className="text-sm space-y-2 text-muted-foreground">
-            <li>• Chaque coffre peut doubler vos gains ou vous faire tout perdre.</li>
-            <li>• Vous pouvez encaisser vos gains à tout moment avant d'ouvrir un nouveau coffre.</li>
-            <li>• Le niveau Risqué offre des multiplicateurs plus élevés mais plus de pièges.</li>
-          </ul>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="p-3 bg-card/50 rounded-md border border-border/50">
+              <p className="font-bold text-accent mb-1">FACILE</p>
+              <p className="text-muted-foreground">2 coffres gagnants sur 3. Multiplicateur +0.2x par gain.</p>
+            </div>
+            <div className="p-3 bg-card/50 rounded-md border border-border/50">
+              <p className="font-bold text-amber-500 mb-1">MOYEN</p>
+              <p className="text-muted-foreground">1 coffre gagnant, 1 perte, 1 piège. Multiplicateur +0.4x.</p>
+            </div>
+            <div className="p-3 bg-card/50 rounded-md border border-border/50">
+              <p className="font-bold text-destructive mb-1">RISQUÉ</p>
+              <p className="text-muted-foreground">1 gagnant, gains explosifs (+0.8x), mais pièges fréquents.</p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>
