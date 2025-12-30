@@ -9,38 +9,38 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Premium dark theme - Financial/Gaming hybrid */
-  --background: 220 50% 9%;
-  --foreground: 210 40% 98%;
+  /* Modern Professional Dark Theme */
+  --background: 210 40% 5%;
+  --foreground: 210 30% 95%;
 
-  --card: 220 50% 13%;
-  --card-foreground: 210 40% 98%;
+  --card: 210 35% 10%;
+  --card-foreground: 210 30% 95%;
 
-  --popover: 220 50% 11%;
-  --popover-foreground: 210 40% 98%;
+  --popover: 210 35% 12%;
+  --popover-foreground: 210 30% 95%;
 
-  /* Gold gradient for Primary/Investment - Premium feel */
-  --primary: 43 98% 60%;
-  --primary-foreground: 220 50% 9%;
+  /* Modern Blue Primary - Professional & trustworthy */
+  --primary: 217 91% 60%;
+  --primary-foreground: 210 40% 5%;
 
-  /* Vibrant Purple for Gaming/Quests */
-  --secondary: 260 85% 65%;
-  --secondary-foreground: 210 40% 98%;
+  /* Slate Secondary - Clean & sophisticated */
+  --secondary: 217 33% 45%;
+  --secondary-foreground: 210 30% 95%;
 
-  --muted: 217 33% 18%;
-  --muted-foreground: 215 18% 62%;
+  --muted: 217 25% 20%;
+  --muted-foreground: 217 20% 55%;
 
-  --accent: 142 70% 48%; /* Vibrant Green */
-  --accent-foreground: 144 100% 97%;
+  --accent: 168 84% 55%; /* Modern Teal */
+  --accent-foreground: 210 40% 5%;
 
   --destructive: 0 84% 60%;
-  --destructive-foreground: 210 40% 98%;
+  --destructive-foreground: 210 40% 5%;
 
-  --border: 217 33% 22%;
-  --input: 217 33% 22%;
-  --ring: 43 98% 60%;
+  --border: 217 30% 18%;
+  --input: 217 30% 18%;
+  --ring: 217 91% 60%;
 
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 }
 
 @layer base {
@@ -58,32 +58,28 @@
 }
 
 @layer utilities {
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FFE066] via-[#FDB931] to-[#D4AF37];
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-blue-400;
   }
   
-  .text-gradient-neon {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#A78BFA] to-[#EC4899];
-  }
-
   .text-gradient-accent {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#34D399] to-[#10B981];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-cyan-400;
   }
 
   .glass-card {
-    @apply bg-card/50 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/40;
+    @apply bg-card/40 backdrop-blur-md border border-border/40 shadow-lg shadow-black/20;
   }
 
   .glass-card-sm {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/20;
+    @apply bg-card/30 backdrop-blur-md border border-border/40 shadow-md shadow-black/10;
   }
 
   .btn-glow {
-    @apply shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow;
+    @apply shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow duration-300;
   }
 
   .card-gradient {
-    @apply bg-gradient-to-br from-white/10 via-white/5 to-transparent;
+    @apply bg-gradient-to-br from-white/5 via-white/2 to-transparent;
   }
 
   .animate-spin-slow {
@@ -96,16 +92,16 @@
 
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
+    50% { transform: translateY(-6px); }
   }
 
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s ease-in-out infinite;
   }
 
-  @keyframes pulse-glow {
+  @keyframes pulse-subtle {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+    50% { opacity: 0.9; }
   }
 }
 

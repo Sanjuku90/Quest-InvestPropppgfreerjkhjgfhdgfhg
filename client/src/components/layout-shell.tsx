@@ -32,31 +32,31 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   const NavContent = () => (
     <div className="flex flex-col h-full">
-      <div className="p-6 border-b border-white/5">
+      <div className="p-6 border-b border-border/50">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold font-display text-gradient-gold">
+          <h1 className="text-2xl font-bold font-display text-gradient-primary">
             QuestInvest
           </h1>
-          <p className="text-xs font-mono tracking-widest text-primary opacity-70">PRO EDITION</p>
+          <p className="text-xs font-mono tracking-widest text-primary/80">PRO</p>
         </div>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1.5 py-6">
+      <nav className="flex-1 px-3 space-y-1 py-6">
         {navItems.map((item) => {
           const isActive = location === item.href;
           const Icon = item.icon;
           return (
             <Link key={item.href} href={item.href}>
               <div 
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer font-medium
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 cursor-pointer font-medium text-sm
                   ${isActive 
-                    ? "bg-gradient-to-r from-primary/30 to-primary/10 text-primary border border-primary/30 shadow-lg shadow-primary/20" 
-                    : "text-muted-foreground hover:bg-white/8 hover:text-foreground border border-transparent"
+                    ? "bg-primary/15 text-primary border border-primary/30" 
+                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground border border-transparent"
                   }
                 `}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Icon size={20} className="flex-shrink-0" />
+                <Icon size={18} className="flex-shrink-0" />
                 <span>{item.label}</span>
               </div>
             </Link>
@@ -64,23 +64,23 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         })}
       </nav>
 
-      <div className="p-4 mt-auto border-t border-white/5 space-y-4">
-        <div className="flex items-center gap-3 px-4 py-3 rounded-lg glass-card-sm border-white/10 hover:border-white/15 transition-all">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary/80 to-orange-500 flex items-center justify-center font-bold text-primary-foreground shadow-lg shadow-primary/40">
+      <div className="p-4 mt-auto border-t border-border/50 space-y-3">
+        <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg glass-card-sm transition-all">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center font-bold text-white text-sm flex-shrink-0">
             {user.fullName?.charAt(0) || "U"}
           </div>
-          <div className="overflow-hidden flex-1">
-            <p className="text-sm font-semibold truncate">{user.fullName}</p>
+          <div className="overflow-hidden flex-1 min-w-0">
+            <p className="text-xs font-semibold truncate">{user.fullName}</p>
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </div>
         
         <Button 
           variant="outline" 
-          className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
+          className="w-full justify-start gap-2 text-destructive border-destructive/30 text-xs"
           onClick={() => logout.mutate()}
         >
-          <LogOut size={18} />
+          <LogOut size={16} />
           Sign Out
         </Button>
       </div>
