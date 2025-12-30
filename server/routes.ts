@@ -1,16 +1,191 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupAuth } from "./auth";
+import { api } from "@shared/routes";
+import { z } from "zod";
+import { format } from "date-fns";
+import { LEVELS } from "@shared/schema";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  setupAuth(app, storage);
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  // === Quests Logic ===
+  app.get(api.quests.list.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user!;
+    const today = format(new Date(), "yyyy-MM-dd");
+
+    let quests = await storage.getDailyQuests(user.id, today);
+
+    if (quests.length === 0 && user.investmentBalance > 0) {
+      // Generate daily quests based on investment
+      const baseQuests = 4;
+      const extraQuests = Math.floor(user.investmentBalance / 50000); // Example: 1 extra per 50k
+      const totalQuests = baseQuests + extraQuests;
+      
+      // 35% of investment balance per quest
+      const rewardAmount = Math.floor(user.investmentBalance * 0.35);
+
+      const questTypes = [
+        { type: "video", desc: "Regarder une vidéo sponsorisée" },
+        { type: "quiz", desc: "Répondre au quiz du jour" },
+        { type: "link", desc: "Visiter le lien partenaire" },
+        { type: "referral", desc: "Partager votre lien de parrainage" },
+        { type: "checkin", desc: "Bonus de connexion quotidienne" },
+        { type: "review", desc: "Laisser un avis positif" },
+      ];
+
+      for (let i = 0; i < totalQuests; i++) {
+        const template = questTypes[i % questTypes.length];
+        await storage.createQuest({
+          userId: user.id,
+          date: today,
+          type: template.type,
+          description: template.desc,
+          rewardAmount: rewardAmount,
+          completed: false,
+        });
+      }
+      quests = await storage.getDailyQuests(user.id, today);
+    }
+
+    res.json(quests);
+  });
+
+  app.post(api.quests.complete.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const questId = Number(req.params.id);
+    const user = req.user!;
+    
+    const quest = await storage.getQuest(questId);
+    if (!quest || quest.userId !== user.id) return res.sendStatus(404);
+    if (quest.completed) return res.status(400).send("Déjà complété");
+
+    // Update quest
+    const updatedQuest = await storage.updateQuest(questId, { completed: true });
+
+    // Update user balance
+    const updatedUser = await storage.updateUser(user.id, {
+      walletBalance: (user.walletBalance || 0) + quest.rewardAmount,
+    });
+
+    // Log transaction
+    await storage.createTransaction({
+      userId: user.id,
+      type: "quest_reward",
+      amount: quest.rewardAmount,
+      description: `Récompense quête: ${quest.description}`,
+    });
+
+    res.json({ quest: updatedQuest, user: updatedUser });
+  });
+
+  // === Investment & Wallet ===
+  app.post(api.invest.deposit.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const { amount } = req.body;
+    const user = req.user!;
+
+    // First deposit bonus check
+    let bonusAmount = 0;
+    const transactions = await storage.getTransactions(user.id);
+    const hasDeposited = transactions.some(t => t.type === "deposit");
+    
+    if (!hasDeposited) {
+      bonusAmount = Math.floor(amount * 0.40); // 40% bonus
+    }
+
+    const updatedUser = await storage.updateUser(user.id, {
+      investmentBalance: (user.investmentBalance || 0) + amount,
+      bonusBalance: (user.bonusBalance || 0) + bonusAmount,
+      level: amount > 100000 ? LEVELS.PLATINUM : amount > 50000 ? LEVELS.GOLD : amount > 10000 ? LEVELS.SILVER : LEVELS.BRONZE,
+    });
+
+    await storage.createTransaction({
+      userId: user.id,
+      type: "deposit",
+      amount: amount,
+      description: "Dépôt initial",
+    });
+
+    if (bonusAmount > 0) {
+      await storage.createTransaction({
+        userId: user.id,
+        type: "bonus_locked",
+        amount: bonusAmount,
+        description: "Bonus premier dépôt (bloqué)",
+      });
+    }
+
+    res.json(updatedUser);
+  });
+
+  app.post(api.wallet.withdraw.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const { amount } = req.body;
+    const user = req.user!;
+
+    if ((user.walletBalance || 0) < amount) {
+      return res.status(400).json({ message: "Solde insuffisant" });
+    }
+
+    const updatedUser = await storage.updateUser(user.id, {
+      walletBalance: user.walletBalance! - amount,
+    });
+
+    await storage.createTransaction({
+      userId: user.id,
+      type: "withdrawal",
+      amount: amount,
+      description: "Retrait vers mobile money",
+    });
+
+    res.json(updatedUser);
+  });
+
+  app.get(api.wallet.history.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const txs = await storage.getTransactions(req.user!.id);
+    res.json(txs);
+  });
+
+  // === Roulette Game ===
+  app.post(api.game.spin.path, async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user!;
+
+    if ((user.bonusBalance || 0) <= 0) {
+      return res.status(400).json({ message: "Aucun bonus à débloquer" });
+    }
+
+    // 40% chance to win, or guaranteed if they played enough? 
+    // Let's make it random for now.
+    const won = Math.random() > 0.6; 
+
+    if (won) {
+      const bonus = user.bonusBalance!;
+      const updatedUser = await storage.updateUser(user.id, {
+        bonusBalance: 0,
+        walletBalance: (user.walletBalance || 0) + bonus,
+        isBonusUnlocked: true,
+      });
+
+      await storage.createTransaction({
+        userId: user.id,
+        type: "bonus_unlock",
+        amount: bonus,
+        description: "Bonus débloqué à la roulette",
+      });
+
+      res.json({ won: true, message: "Félicitations ! Bonus débloqué.", user: updatedUser });
+    } else {
+      res.json({ won: false, message: "Perdu ! Réessayez plus tard.", user: user });
+    }
+  });
 
   return httpServer;
 }

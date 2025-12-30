@@ -1,38 +1,72 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { User, InsertUser, Quest, Transaction, InsertTransaction, users, dailyQuests, transactions } from "@shared/schema";
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updates: Partial<User>): Promise<User>;
+  
+  // Quests
+  getDailyQuests(userId: number, date: string): Promise<Quest[]>;
+  createQuest(quest: Quest): Promise<Quest>;
+  updateQuest(id: number, updates: Partial<Quest>): Promise<Quest>;
+  getQuest(id: number): Promise<Quest | undefined>;
+
+  // Transactions
+  createTransaction(tx: InsertTransaction): Promise<Transaction>;
+  getTransactions(userId: number): Promise<Transaction[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User> {
+    const [user] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return user;
+  }
+
+  async getDailyQuests(userId: number, date: string): Promise<Quest[]> {
+    return db.select().from(dailyQuests).where(and(eq(dailyQuests.userId, userId), eq(dailyQuests.date, date)));
+  }
+
+  async createQuest(quest: any): Promise<Quest> {
+    const [newQuest] = await db.insert(dailyQuests).values(quest).returning();
+    return newQuest;
+  }
+
+  async updateQuest(id: number, updates: Partial<Quest>): Promise<Quest> {
+    const [quest] = await db.update(dailyQuests).set(updates).where(eq(dailyQuests.id, id)).returning();
+    return quest;
+  }
+
+  async getQuest(id: number): Promise<Quest | undefined> {
+    const [quest] = await db.select().from(dailyQuests).where(eq(dailyQuests.id, id));
+    return quest;
+  }
+
+  async createTransaction(tx: InsertTransaction): Promise<Transaction> {
+    const [transaction] = await db.insert(transactions).values(tx).returning();
+    return transaction;
+  }
+
+  async getTransactions(userId: number): Promise<Transaction[]> {
+    return db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(transactions.createdAt);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
