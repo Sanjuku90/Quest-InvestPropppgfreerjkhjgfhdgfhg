@@ -1,9 +1,11 @@
 import { User, InsertUser, Quest, Transaction, users, dailyQuests, transactions, chestGames } from "@shared/schema";
 import type { InsertTransaction } from "@shared/schema";
-
-export type ChestGame = typeof chestGames.$inferSelect;
-import { db } from "./db";
+import { db, pool } from "./db";
 import { eq, and, desc } from "drizzle-orm";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
+
+const PostgresStore = connectPg(session);
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -31,9 +33,19 @@ export interface IStorage {
 
   // Leaderboard
   getLeaderboard(): Promise<Array<any>>;
+  sessionStore: session.Store;
 }
 
 export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresStore({
+      pool,
+      createTableIfMissing: true,
+    });
+  }
+
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
