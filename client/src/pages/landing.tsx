@@ -1,6 +1,8 @@
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Target, Zap, Trophy, ArrowRight, Check } from "lucide-react";
+import { StatsShowcase } from "@/components/stats-showcase";
+import { Testimonials } from "@/components/testimonials";
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
@@ -28,17 +30,17 @@ export default function LandingPage() {
 
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-7xl font-bold font-display leading-tight">
+            <h1 className="text-6xl md:text-7xl font-bold font-display leading-tight animate-fade-in-up">
               Invest Smart.<br />
-              <span className="text-gradient-primary">Complete Quests.</span><br />
-              Earn More.
+              <span className="text-gradient-primary animate-fade-in-up-delay-1">Complete Quests.</span><br />
+              <span className="animate-fade-in-up-delay-2">Earn More.</span>
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-up-delay-3">
               Transform your daily goals into meaningful financial returns. Join a community of forward-thinking investors who turn tasks into profits.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6 animate-fade-in-up-delay-3">
             <Button 
               size="lg" 
               onClick={() => setLocation("/auth")}
@@ -96,10 +98,17 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Statistics Section */}
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-card/20 border-y border-border/50">
+        <div className="max-w-6xl mx-auto">
+          <StatsShowcase />
+        </div>
+      </section>
+
       {/* Benefits Section */}
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold font-display text-center mb-16">
+          <h2 className="text-4xl font-bold font-display text-center mb-16 animate-fade-in-up">
             How It Works
           </h2>
 
@@ -111,7 +120,15 @@ export default function LandingPage() {
               "Watch your portfolio grow and climb rankings",
               "Withdraw earnings or reinvest for bigger returns",
             ].map((benefit, idx) => (
-              <div key={idx} className="flex items-start gap-4 p-4 rounded-lg border border-border/50 hover:border-primary/30 transition-colors" data-testid={`item-benefit-${idx}`}>
+              <div 
+                key={idx} 
+                className="flex items-start gap-4 p-4 rounded-lg border border-border/50 hover:border-primary/30 transition-colors modern-card animate-fade-in-up" 
+                data-testid={`item-benefit-${idx}`}
+                style={{
+                  animationDelay: `${idx * 0.1}s`,
+                  opacity: 0,
+                }}
+              >
                 <div className="w-6 h-6 bg-accent rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                   <Check className="w-4 h-4 text-background" />
                 </div>
@@ -119,6 +136,13 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-6 bg-card/20 border-y border-border/50">
+        <div className="max-w-6xl mx-auto">
+          <Testimonials />
         </div>
       </section>
 

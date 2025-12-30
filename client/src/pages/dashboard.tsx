@@ -7,11 +7,14 @@ import {
   Lock, 
   ArrowRight, 
   Crown,
-  LayoutDashboard
+  LayoutDashboard,
+  CheckCircle2,
+  Target
 } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { TransactionList } from "@/components/transaction-list";
 import { Button } from "@/components/ui/button";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { LEVELS } from "@shared/schema";
 
 export default function DashboardPage() {
@@ -24,6 +27,8 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      <Breadcrumb items={[]} />
+      
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-2">
           <h2 className="text-4xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-400">
@@ -80,8 +85,35 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Quick Actions */}
+        {/* Achievement Widget */}
         <div className="space-y-6">
+          <div className="glass-effect p-6 rounded-2xl space-y-4">
+            <h3 className="text-lg font-bold font-display flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-accent" />
+              Quest Progress
+            </h3>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">This Week</span>
+                  <span className="font-bold text-accent">8/10 Completed</span>
+                </div>
+                <div className="w-full h-2 bg-card rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-accent to-emerald-400 w-4/5 rounded-full" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">This Month</span>
+                  <span className="font-bold text-primary">24/30 Completed</span>
+                </div>
+                <div className="w-full h-2 bg-card rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary to-blue-400 w-4/5 rounded-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <h3 className="text-xl font-bold font-display">Quick Actions</h3>
           <div className="grid gap-4">
             <Link href="/quests">
