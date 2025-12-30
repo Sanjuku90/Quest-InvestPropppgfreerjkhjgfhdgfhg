@@ -9,6 +9,7 @@ import { useUser } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
 import NotFound from "@/pages/not-found";
+import LandingPage from "@/pages/landing";
 import AuthPage from "@/pages/auth";
 import DashboardPage from "@/pages/dashboard";
 import QuestsPage from "@/pages/quests";
@@ -23,7 +24,7 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 
   useEffect(() => {
     if (!isLoading && !user) {
-      setLocation("/auth");
+      setLocation("/landing");
     }
   }, [user, isLoading, setLocation]);
 
@@ -49,6 +50,7 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 function Router() {
   return (
     <Switch>
+      <Route path="/landing" component={LandingPage} />
       <Route path="/auth" component={AuthPage} />
       
       {/* Protected Routes */}
