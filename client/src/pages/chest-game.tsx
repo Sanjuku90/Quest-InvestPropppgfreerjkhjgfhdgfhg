@@ -48,8 +48,12 @@ export default function ChestGame() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["/api/user"], data.user);
+      queryClient.setQueryData(["/api/game/chest/active"], null);
       queryClient.invalidateQueries({ queryKey: ["/api/game/chest/active"] });
       queryClient.invalidateQueries({ queryKey: ["/api/wallet/history"] });
+      setLastOutcome(null);
+      startMutation.reset();
+      openMutation.reset();
       toast({ title: "Encaissé", description: data.message });
     }
   });
