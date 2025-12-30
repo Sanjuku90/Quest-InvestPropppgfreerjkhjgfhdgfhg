@@ -1,7 +1,9 @@
-import { User, InsertUser, Quest, Transaction, users, dailyQuests, transactions } from "@shared/schema";
+import { User, InsertUser, Quest, Transaction, users, dailyQuests, transactions, chestGames } from "@shared/schema";
 import type { InsertTransaction } from "@shared/schema";
+
+export type ChestGame = typeof chestGames.$inferSelect;
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
@@ -11,7 +13,7 @@ export interface IStorage {
   
   // Quests
   getDailyQuests(userId: number, date: string): Promise<Quest[]>;
-  createQuest(quest: Quest): Promise<Quest>;
+  createQuest(quest: any): Promise<Quest>;
   updateQuest(id: number, updates: Partial<Quest>): Promise<Quest>;
   getQuest(id: number): Promise<Quest | undefined>;
 
@@ -20,6 +22,12 @@ export interface IStorage {
   getTransactions(userId: number): Promise<Transaction[]>;
   getPendingTransactions(): Promise<Transaction[]>;
   updateTransaction(id: number, status: string, adminNote?: string): Promise<Transaction>;
+
+  // Chest Game
+  createChestGame(game: any): Promise<any>;
+  getChestGame(id: number): Promise<any>;
+  updateChestGame(id: number, updates: any): Promise<any>;
+  getActiveChestGame(userId: number): Promise<any>;
 
   // Leaderboard
   getLeaderboard(): Promise<Array<any>>;
@@ -71,7 +79,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTransactions(userId: number): Promise<Transaction[]> {
-    return db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(transactions.createdAt);
+    return db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt));
   }
 
   async getLeaderboard(): Promise<Array<any>> {
@@ -81,11 +89,11 @@ export class DatabaseStorage implements IStorage {
       level: users.level,
       investmentBalance: users.investmentBalance,
       walletBalance: users.walletBalance,
-    }).from(users).orderBy(users.investmentBalance);
+    }).from(users).orderBy(desc(users.investmentBalance));
   }
 
   async getPendingTransactions(): Promise<Transaction[]> {
-    return db.select().from(transactions).where(eq(transactions.status, "pending")).orderBy(transactions.createdAt);
+    return db.select().from(transactions).where(eq(transactions.status, "pending")).orderBy(desc(transactions.createdAt));
   }
 
   async updateTransaction(id: number, status: string, adminNote?: string): Promise<Transaction> {
@@ -93,6 +101,29 @@ export class DatabaseStorage implements IStorage {
     if (adminNote) updates.adminNote = adminNote;
     const [tx] = await db.update(transactions).set(updates).where(eq(transactions.id, id)).returning();
     return tx;
+  }
+
+  async createChestGame(game: any): Promise<any> {
+    const [newGame] = await db.insert(chestGames).values(game).returning();
+    return newGame;
+  }
+
+  async getChestGame(id: number): Promise<any> {
+    const [game] = await db.select().from(chestGames).where(eq(chestGames.id, id));
+    return game;
+  }
+
+  async updateChestGame(id: number, updates: any): Promise<any> {
+    const [game] = await db.update(chestGames).set(updates).where(eq(chestGames.id, id)).returning();
+    return game;
+  }
+
+  async getActiveChestGame(userId: number): Promise<any> {
+    const [game] = await db.select()
+      .from(chestGames)
+      .where(and(eq(chestGames.userId, userId), eq(chestGames.status, "playing")))
+      .limit(1);
+    return game;
   }
 }
 

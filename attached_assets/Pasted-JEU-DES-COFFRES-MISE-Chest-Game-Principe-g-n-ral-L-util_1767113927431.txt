@@ -1,0 +1,114 @@
+JEU DES COFFRES À MISE (Chest Game)
+
+🔹 Principe général
+	•	L’utilisateur mise une partie de ses gains / crédits / bonus
+	•	Il voit plusieurs coffres fermés
+	•	Il choisit un coffre à ouvrir
+	•	Le coffre peut contenir :
+	•	➕ un gain
+	•	❌ une perte
+	•	🔒 un piège (fin du jeu)
+	•	🔥 un multiplicateur
+
+👉 Plus il avance, plus les gains augmentent
+👉 Mais le risque augmente aussi
+
+⸻
+
+💰 Mise pour ouvrir un coffre
+	•	Chaque ouverture nécessite une mise obligatoire
+	•	La mise peut être :
+	•	Un % des gains du jour
+	•	Un montant fixe (ex : 500 / 1 000 / 2 000 XOF)
+	•	Des crédits de jeu
+
+Exemple :
+	•	Coffre 1 → mise 500
+	•	Coffre 2 → mise 1 000
+	•	Coffre 3 → mise 2 000
+	•	Coffre 4 → mise 4 000
+
+⸻
+
+🎁 Contenu possible des coffres
+
+✅ Coffres positifs
+	•	+20% du solde de gains
+	•	+50% du gain du jour
+	•	Multiplicateur x2 / x3
+	•	Déblocage d’une quête bonus
+	•	Coffre gratuit
+
+❌ Coffres négatifs
+	•	-30% des gains du jour
+	•	Perte de la mise
+	•	Blocage temporaire d’une quête
+	•	Retour au début du jeu
+
+☠️ Coffre piège (rare)
+	•	Fin immédiate du jeu
+	•	L’utilisateur garde ce qu’il a déjà sécurisé
+
+⸻
+
+🛑 Sécurisation (élément PRO)
+
+Pour éviter que ce soit trop violent :
+
+🔐 Bouton “Encaisser”
+	•	À tout moment, l’utilisateur peut :
+	•	Encaisser ses gains
+	•	Quitter le jeu en sécurité
+
+👉 S’il continue = il accepte le risque
+
+⸻
+
+🎮 Niveaux de jeu (gamification avancée)
+
+🟢 Niveau Facile
+	•	Mise faible
+	•	Peu de pièges
+	•	Gains modérés
+
+🟠 Niveau Moyen
+	•	Mise moyenne
+	•	Plus de coffres négatifs
+	•	Gains élevés
+
+🔴 Niveau Risqué
+	•	Mise élevée
+	•	Pièges fréquents
+	•	Gains explosifs
+
+⸻
+
+🧠 Lié à l’investissement
+
+Plus l’utilisateur investit, plus il débloque :
+	•	Plus de coffres par partie
+	•	Des coffres “premium”
+	•	Des multiplicateurs plus forts
+	•	Des protections (1 coffre piège ignoré)
+
+⸻
+
+🏆 Bonus & récompenses
+	•	Badge “Maître des coffres”
+	•	Classement des meilleurs joueurs
+	•	Bonus hebdomadaire pour les joueurs prudents
+	•	Défis : ouvrir X coffres sans piège
+
+⸻
+
+⚙️ Version SIMPLE (recommandée)
+
+Si tu veux rester très simple :
+	•	3 coffres
+	•	1 mise fixe
+	•	1 gain / 1 perte / 1 piège
+	•	Bouton encaisser
+
+👉 Facile à coder
+👉 Très addictif
+👉 Compréhensible pour tous

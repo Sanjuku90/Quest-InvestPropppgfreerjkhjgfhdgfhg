@@ -17,6 +17,7 @@ import RoulettePage from "@/pages/roulette";
 import WalletPage from "@/pages/wallet";
 import LeaderboardPage from "@/pages/leaderboard";
 import AdminPage from "@/pages/admin";
+import ChestGamePage from "@/pages/chest-game";
 
 // Protected Route Wrapper
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
@@ -48,6 +49,10 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   );
 }
 
+function ProtectedRouteChest() {
+  return <ChestGamePage />;
+}
+
 function Router() {
   return (
     <Switch>
@@ -63,6 +68,9 @@ function Router() {
       </Route>
       <Route path="/roulette">
         {() => <ProtectedRoute component={RoulettePage} />}
+      </Route>
+      <Route path="/chest-game">
+        {() => <ProtectedRoute component={ProtectedRouteChest} />}
       </Route>
       <Route path="/wallet">
         {() => <ProtectedRoute component={WalletPage} />}

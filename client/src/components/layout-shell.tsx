@@ -9,7 +9,8 @@ import {
   Menu,
   X,
   Trophy,
-  Shield
+  Shield,
+  Package
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const navItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/quests", label: "Daily Quests", icon: Target },
+    { href: "/chest-game", label: "Chest Game", icon: Package },
     { href: "/roulette", label: "Lucky Wheel", icon: Gamepad2 },
     { href: "/wallet", label: "Wallet", icon: Wallet },
     { href: "/leaderboard", label: "Leaderboard", icon: Trophy },

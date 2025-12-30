@@ -167,6 +167,96 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/game/chest/start", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const { stake, difficulty } = req.body;
+    const user = req.user! as any;
+
+    if ((user.walletBalance ?? 0) < stake) {
+      return res.status(400).json({ message: "Solde insuffisant" });
+    }
+
+    // Deduct stake
+    await storage.updateUser(user.id, {
+      walletBalance: (user.walletBalance - stake) as any
+    });
+
+    const game = await storage.createChestGame({
+      userId: user.id,
+      status: "playing",
+      difficulty,
+      stake,
+      currentMultiplier: "1.0",
+      securedGains: 0,
+      chestsOpened: 0
+    });
+
+    res.json(game);
+  });
+
+  app.post("/api/game/chest/open", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    const game = await storage.getActiveChestGame(user.id);
+
+    if (!game) return res.status(404).json({ message: "Aucun jeu en cours" });
+
+    // Game logic: 10% trap, 20% loss, 70% gain
+    const rand = Math.random();
+    let outcome: "gain" | "loss" | "trap";
+    
+    if (rand < 0.1) outcome = "trap";
+    else if (rand < 0.3) outcome = "loss";
+    else outcome = "gain";
+
+    if (outcome === "trap") {
+      await storage.updateChestGame(game.id, { status: "lost" });
+      return res.json({ outcome: "trap", message: "Piège ! Vous avez tout perdu.", game: { ...game, status: "lost" } });
+    }
+
+    if (outcome === "loss") {
+       const newMultiplier = Math.max(0.5, parseFloat(game.currentMultiplier) - 0.2).toFixed(1);
+       const updatedGame = await storage.updateChestGame(game.id, { 
+         currentMultiplier: newMultiplier,
+         chestsOpened: game.chestsOpened + 1
+       });
+       return res.json({ outcome: "loss", message: "Aïe ! Multiplicateur réduit.", game: updatedGame });
+    }
+
+    // Gain
+    const newMultiplier = (parseFloat(game.currentMultiplier) + 0.3).toFixed(1);
+    const updatedGame = await storage.updateChestGame(game.id, { 
+      currentMultiplier: newMultiplier,
+      chestsOpened: game.chestsOpened + 1
+    });
+    res.json({ outcome: "gain", message: "Gagné ! Le multiplicateur augmente.", game: updatedGame });
+  });
+
+  app.post("/api/game/chest/cashout", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    const game = await storage.getActiveChestGame(user.id);
+
+    if (!game) return res.status(404).json({ message: "Aucun jeu en cours" });
+
+    const winAmount = Math.floor(game.stake * parseFloat(game.currentMultiplier));
+    
+    await storage.updateUser(user.id, {
+      walletBalance: (user.walletBalance + winAmount) as any
+    });
+
+    const updatedGame = await storage.updateChestGame(game.id, { status: "cashed_out", securedGains: winAmount });
+
+    await storage.createTransaction({
+      userId: user.id,
+      type: "quest_reward", // Using quest_reward as a generic gain type for now
+      amount: winAmount,
+      description: `Gains Jeu des Coffres (x${game.currentMultiplier})`,
+    });
+
+    res.json({ message: `Encaissé ! Vous avez gagné ${winAmount} USD`, game: updatedGame });
+  });
+
   // === Leaderboard ===
   app.get(api.leaderboard.list.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);

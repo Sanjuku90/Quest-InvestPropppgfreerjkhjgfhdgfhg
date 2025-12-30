@@ -17,6 +17,18 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const chestGames = pgTable("chest_games", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  status: text("status").notNull(), // "playing", "cashed_out", "lost"
+  difficulty: text("difficulty").notNull(), // "easy", "medium", "hard"
+  stake: integer("stake").notNull(),
+  currentMultiplier: text("current_multiplier").default("1.0"),
+  securedGains: integer("secured_gains").default(0),
+  chestsOpened: integer("chests_opened").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const dailyQuests = pgTable("daily_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
