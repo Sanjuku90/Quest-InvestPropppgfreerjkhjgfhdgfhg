@@ -323,26 +323,13 @@ export async function registerRoutes(
   });
 
   app.get("/api/admin/transactions/pending", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const user = req.user! as any;
-    
-    // Check if user is admin
-    const adminUser = await storage.getUser(user.id);
-    if (!adminUser?.isAdmin) return res.sendStatus(403);
-
     const transactions = await storage.getPendingTransactions();
     res.json(transactions);
   });
 
   app.post("/api/admin/transactions/:id/approve", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const user = req.user! as any;
     const txId = Number(req.params.id);
     const { adminNote } = req.body;
-
-    // Check if user is admin
-    const adminUser = await storage.getUser(user.id);
-    if (!adminUser?.isAdmin) return res.sendStatus(403);
 
     const tx = await storage.updateTransaction(txId, "approved", adminNote);
     
@@ -369,14 +356,8 @@ export async function registerRoutes(
   });
 
   app.post("/api/admin/transactions/:id/reject", async (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    const user = req.user! as any;
     const txId = Number(req.params.id);
     const { adminNote } = req.body;
-
-    // Check if user is admin
-    const adminUser = await storage.getUser(user.id);
-    if (!adminUser?.isAdmin) return res.sendStatus(403);
 
     const tx = await storage.updateTransaction(txId, "rejected", adminNote);
     res.json(tx);
