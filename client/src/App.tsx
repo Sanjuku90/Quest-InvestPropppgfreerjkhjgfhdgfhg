@@ -49,36 +49,6 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   );
 }
 
-// Admin Route Wrapper - Only accessible by admins
-function AdminRoute({ component: Component }: { component: React.ComponentType }) {
-  const { data: user, isLoading } = useUser();
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (!isLoading && (!user || !user.isAdmin)) {
-      setLocation("/landing");
-    }
-  }, [user, isLoading, setLocation]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user || !user.isAdmin) {
-    return null;
-  }
-
-  return (
-    <LayoutShell>
-      <Component />
-    </LayoutShell>
-  );
-}
-
 function ProtectedRouteChest() {
   return <ChestGamePage />;
 }
@@ -109,7 +79,7 @@ function Router() {
         {() => <ProtectedRoute component={LeaderboardPage} />}
       </Route>
       <Route path="/admin">
-        {() => <AdminRoute component={AdminPage} />}
+        {() => <ProtectedRoute component={AdminPage} />}
       </Route>
 
       <Route component={NotFound} />
