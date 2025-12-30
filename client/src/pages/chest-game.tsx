@@ -70,7 +70,15 @@ export default function ChestGame() {
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold font-display text-gradient-primary">Jeu des Coffres</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-4xl font-bold font-display text-gradient-primary">Jeu des Coffres</h1>
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Solde Total</p>
+            <p className="text-lg font-bold text-primary">
+              ${(user?.walletBalance ?? 0) + (user?.investmentBalance ?? 0)}
+            </p>
+          </div>
+        </div>
         <p className="text-muted-foreground">Misez, ouvrez des coffres et multipliez vos gains. Attention aux pièges !</p>
       </div>
 

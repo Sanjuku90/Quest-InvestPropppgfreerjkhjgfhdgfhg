@@ -172,13 +172,28 @@ export async function registerRoutes(
     const { stake, difficulty } = req.body;
     const user = req.user! as any;
 
-    if ((user.walletBalance ?? 0) < stake) {
-      return res.status(400).json({ message: "Solde insuffisant" });
+    const totalBalance = (user.walletBalance ?? 0) + (user.investmentBalance ?? 0);
+    if (totalBalance < stake) {
+      return res.status(400).json({ message: "Solde insuffisant (Portefeuille + Investissement)" });
     }
 
-    // Deduct stake
+    // Deduct stake: prioritize walletBalance, then investmentBalance
+    let remainingStake = stake;
+    let newWalletBalance = user.walletBalance ?? 0;
+    let newInvestmentBalance = user.investmentBalance ?? 0;
+
+    if (newWalletBalance >= remainingStake) {
+      newWalletBalance -= remainingStake;
+      remainingStake = 0;
+    } else {
+      remainingStake -= newWalletBalance;
+      newWalletBalance = 0;
+      newInvestmentBalance -= remainingStake;
+    }
+
     await storage.updateUser(user.id, {
-      walletBalance: (user.walletBalance - stake) as any
+      walletBalance: newWalletBalance as any,
+      investmentBalance: newInvestmentBalance as any
     });
 
     const game = await storage.createChestGame({
