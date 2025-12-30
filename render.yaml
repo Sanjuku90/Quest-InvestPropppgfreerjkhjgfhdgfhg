@@ -3,8 +3,8 @@ services:
     name: questinvest-pro
     env: node
     plan: free
-    buildCommand: npm install && npm run build && npm run db:push -- --force
-    startCommand: NODE_ENV=production node dist/index.cjs
+    buildCommand: npm install && npm run build
+    startCommand: npm run db:push && NODE_ENV=production node dist/index.cjs
     envVars:
       - key: NODE_ENV
         value: production
