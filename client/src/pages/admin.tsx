@@ -25,6 +25,8 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [adminNotes, setAdminNotes] = useState<Record<number, string>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [adminError, setAdminError] = useState<string | null>(null);
+  const [isGranting, setIsGranting] = useState(false);
 
   const copyToClipboard = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
@@ -33,8 +35,29 @@ export default function AdminPage() {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const { data: transactions = [], isLoading } = useQuery<Transaction[]>({
+  const grantAdminAccess = async () => {
+    setIsGranting(true);
+    try {
+      const res = await fetch("/api/admin/grant-access", {
+        method: "POST",
+      });
+      if (!res.ok) {
+        setAdminError("Failed to grant admin access");
+        return;
+      }
+      toast({ title: "Success!", description: "Admin access granted! Refreshing..." });
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      setAdminError("Error granting admin access");
+      toast({ title: "Error", description: "Failed to grant admin access", variant: "destructive" });
+    } finally {
+      setIsGranting(false);
+    }
+  };
+
+  const { data: transactions = [], isLoading, error } = useQuery<Transaction[]>({
     queryKey: ["/api/admin/transactions/pending"],
+    retry: false,
   });
 
   const approveMutation = useMutation({
@@ -78,6 +101,8 @@ export default function AdminPage() {
     }
   };
 
+  const isAccessDenied = error && (error as any).message?.includes("403");
+
   return (
     <div className="space-y-8 max-w-6xl mx-auto">
       <div className="space-y-2">
@@ -89,6 +114,28 @@ export default function AdminPage() {
         </div>
         <p className="text-muted-foreground">Review and validate pending user transactions</p>
       </div>
+
+      {isAccessDenied && (
+        <Card className="modern-card p-8 border-orange-500/30 bg-orange-500/5 space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-6 h-6 text-orange-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-lg font-bold mb-2">Admin Access Required</h2>
+              <p className="text-muted-foreground mb-4">You need admin permissions to view and manage transactions. Click the button below to grant yourself admin access.</p>
+              <Button 
+                onClick={grantAdminAccess} 
+                disabled={isGranting}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                {isGranting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                Grant Admin Access
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-16">

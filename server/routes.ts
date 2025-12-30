@@ -182,6 +182,16 @@ export async function registerRoutes(
   });
 
   // === Admin Routes ===
+  // Dev endpoint to make current user admin
+  app.post("/api/admin/grant-access", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const user = req.user! as any;
+    
+    // Make user admin
+    const adminUser = await storage.updateUser(user.id, { isAdmin: true } as any);
+    res.json({ message: "Admin access granted", user: adminUser });
+  });
+
   app.get("/api/admin/transactions/pending", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     const user = req.user! as any;
