@@ -78,9 +78,7 @@ function Router() {
       <Route path="/leaderboard">
         {() => <ProtectedRoute component={LeaderboardPage} />}
       </Route>
-      <Route path="/admin">
-        {() => <ProtectedRoute component={AdminPage} />}
-      </Route>
+      <Route path="/admin" component={AdminPage} />
 
       <Route component={NotFound} />
     </Switch>
