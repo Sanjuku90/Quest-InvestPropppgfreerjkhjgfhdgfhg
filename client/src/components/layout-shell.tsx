@@ -32,43 +32,44 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
 
   const NavContent = () => (
     <div className="flex flex-col h-full">
-      <div className="p-6">
-        <h1 className="text-2xl font-bold font-display text-gradient-gold">
-          QuestInvest
-          <span className="text-white text-xs block font-mono tracking-widest mt-1 opacity-50">PRO EDITION</span>
-        </h1>
+      <div className="p-6 border-b border-white/5">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold font-display text-gradient-gold">
+            QuestInvest
+          </h1>
+          <p className="text-xs font-mono tracking-widest text-primary opacity-70">PRO EDITION</p>
+        </div>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 px-4 space-y-1.5 py-6">
         {navItems.map((item) => {
           const isActive = location === item.href;
           const Icon = item.icon;
           return (
             <Link key={item.href} href={item.href}>
               <div 
-                className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer font-medium
                   ${isActive 
-                    ? "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5" 
-                    : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+                    ? "bg-gradient-to-r from-primary/30 to-primary/10 text-primary border border-primary/30 shadow-lg shadow-primary/20" 
+                    : "text-muted-foreground hover:bg-white/8 hover:text-foreground border border-transparent"
                   }
                 `}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <Icon size={20} />
-                <span className="font-medium">{item.label}</span>
+                <Icon size={20} className="flex-shrink-0" />
+                <span>{item.label}</span>
               </div>
             </Link>
           );
         })}
       </nav>
 
-      <div className="p-4 mt-auto border-t border-white/5">
-        <div className="flex items-center gap-3 px-4 py-3 mb-4 rounded-xl bg-white/5 border border-white/5">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-orange-400 flex items-center justify-center font-bold text-primary-foreground">
+      <div className="p-4 mt-auto border-t border-white/5 space-y-4">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-lg glass-card-sm border-white/10 hover:border-white/15 transition-all">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary/80 to-orange-500 flex items-center justify-center font-bold text-primary-foreground shadow-lg shadow-primary/40">
             {user.fullName?.charAt(0) || "U"}
           </div>
-          <div className="overflow-hidden">
+          <div className="overflow-hidden flex-1">
             <p className="text-sm font-semibold truncate">{user.fullName}</p>
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
@@ -76,7 +77,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         
         <Button 
           variant="outline" 
-          className="w-full justify-start gap-3 border-destructive/30 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="w-full justify-start gap-2 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/20"
           onClick={() => logout.mutate()}
         >
           <LogOut size={18} />
@@ -89,7 +90,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:block w-72 border-r border-border bg-card/30 backdrop-blur-xl fixed h-full z-50">
+      <aside className="hidden lg:block w-72 border-r border-border/50 bg-gradient-to-b from-card/50 to-card/30 backdrop-blur-xl fixed h-full z-50 shadow-2xl shadow-black/20">
         <NavContent />
       </aside>
 

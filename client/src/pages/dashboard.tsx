@@ -25,16 +25,16 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold font-display text-white">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-bold font-display bg-clip-text text-transparent bg-gradient-to-r from-white via-white to-gray-400">
             Welcome back, {user.fullName?.split(' ')[0]}
           </h2>
-          <p className="text-muted-foreground mt-1">Here is your financial overview.</p>
+          <p className="text-muted-foreground text-base">Here is your financial overview.</p>
         </div>
         
-        <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30">
-          <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500/20" />
-          <span className="font-bold text-yellow-500">{user.level || LEVELS.BRONZE} Member</span>
+        <div className="flex items-center gap-2 px-4 py-2 rounded-full glass-card-sm bg-gradient-to-r from-yellow-500/15 to-orange-500/10 border-yellow-500/40">
+          <Crown className="w-5 h-5 text-yellow-400 animate-pulse-glow" />
+          <span className="font-bold text-yellow-400">{user.level || LEVELS.BRONZE} Member</span>
         </div>
       </div>
 
@@ -44,22 +44,22 @@ export default function DashboardPage() {
           title="Investment Balance"
           value={`${(user.investmentBalance ?? 0).toLocaleString()} XOF`}
           icon={TrendingUp}
-          gradient="from-blue-600/20 to-cyan-400/10"
-          className="border-blue-500/20"
+          gradient="from-blue-600/25 to-cyan-500/15"
+          className="border-blue-500/30 shadow-lg shadow-blue-500/10"
         />
         <StatCard
           title="Locked Bonus"
           value={`${(user.bonusBalance ?? 0).toLocaleString()} XOF`}
           icon={Lock}
-          gradient="from-purple-600/20 to-pink-400/10"
-          className="border-purple-500/20"
+          gradient="from-purple-600/25 to-pink-500/15"
+          className="border-purple-500/30 shadow-lg shadow-purple-500/10"
         />
         <StatCard
           title="Withdrawable Balance"
           value={`${(user.walletBalance ?? 0).toLocaleString()} XOF`}
           icon={Wallet}
-          gradient="from-emerald-600/20 to-green-400/10"
-          className="border-emerald-500/20"
+          gradient="from-emerald-600/25 to-green-500/15"
+          className="border-emerald-500/30 shadow-lg shadow-emerald-500/10"
         />
       </div>
 

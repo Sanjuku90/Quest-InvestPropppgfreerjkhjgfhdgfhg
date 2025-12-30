@@ -9,36 +9,36 @@
   --font-body: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  /* Dark mode default - Financial/Gaming hybrid theme */
-  --background: 222 47% 11%;
+  /* Premium dark theme - Financial/Gaming hybrid */
+  --background: 220 50% 9%;
   --foreground: 210 40% 98%;
 
-  --card: 222 47% 13%;
+  --card: 220 50% 13%;
   --card-foreground: 210 40% 98%;
 
-  --popover: 222 47% 11%;
+  --popover: 220 50% 11%;
   --popover-foreground: 210 40% 98%;
 
-  /* Gold for Primary/Investment */
-  --primary: 43 96% 64%;
-  --primary-foreground: 222 47% 11%;
+  /* Gold gradient for Primary/Investment - Premium feel */
+  --primary: 43 98% 60%;
+  --primary-foreground: 220 50% 9%;
 
-  /* Purple/Neon for Gaming/Quests */
-  --secondary: 262 83% 68%;
+  /* Vibrant Purple for Gaming/Quests */
+  --secondary: 260 85% 65%;
   --secondary-foreground: 210 40% 98%;
 
-  --muted: 217 33% 17%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 217 33% 18%;
+  --muted-foreground: 215 18% 62%;
 
-  --accent: 142 71% 45%; /* Success Green */
+  --accent: 142 70% 48%; /* Vibrant Green */
   --accent-foreground: 144 100% 97%;
 
-  --destructive: 0 63% 31%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
 
-  --border: 217 33% 20%;
-  --input: 217 33% 20%;
-  --ring: 43 96% 64%;
+  --border: 217 33% 22%;
+  --input: 217 33% 22%;
+  --ring: 43 98% 60%;
 
   --radius: 0.75rem;
 }
@@ -59,19 +59,53 @@
 
 @layer utilities {
   .text-gradient-gold {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FFD700] via-[#FDB931] to-[#D4AF37];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#FFE066] via-[#FDB931] to-[#D4AF37];
   }
   
   .text-gradient-neon {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#A78BFA] to-[#EC4899];
+  }
+
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#34D399] to-[#10B981];
   }
 
   .glass-card {
-    @apply bg-card/60 backdrop-blur-md border border-white/5 shadow-xl;
+    @apply bg-card/50 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/40;
+  }
+
+  .glass-card-sm {
+    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-lg shadow-black/20;
+  }
+
+  .btn-glow {
+    @apply shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-shadow;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-br from-white/10 via-white/5 to-transparent;
   }
 
   .animate-spin-slow {
     animation: spin 3s linear infinite;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
   }
 }
 
