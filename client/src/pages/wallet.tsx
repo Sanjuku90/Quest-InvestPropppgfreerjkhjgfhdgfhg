@@ -119,7 +119,7 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="w-full bg-blue-600 hover:bg-blue-700">Add Funds</Button>
+        <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 h-auto py-3">Add Funds</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -145,7 +145,7 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
             <Input type="number" placeholder="5000" {...register("amount")} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
-          <Button type="submit" className="w-full" disabled={depositMutation.isPending}>
+          <Button type="submit" size="lg" className="w-full h-auto py-3" disabled={depositMutation.isPending}>
             {depositMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
             Submit for Approval
           </Button>
@@ -172,7 +172,7 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
   const onSubmit = async (data: { amount: number; walletAddress: string }) => {
     try {
       await withdrawMutation.mutateAsync(data);
-      toast({ title: "Success", description: "Withdrawal request submitted for admin approval" });
+      toast({ title: "Success", description: "Demande de retrait soumise pour approbation" });
       onOpenChange(false);
       reset();
     } catch (error) {
@@ -183,7 +183,7 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">Withdraw</Button>
+        <Button variant="outline" size="lg" className="w-full h-auto py-3">Withdraw</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -208,7 +208,7 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
             <p className="text-xs text-muted-foreground text-right">Available: {maxAmount.toLocaleString()} USD</p>
           </div>
-          <Button type="submit" className="w-full" disabled={withdrawMutation.isPending}>
+          <Button type="submit" size="lg" className="w-full h-auto py-3" disabled={withdrawMutation.isPending}>
             {withdrawMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
             Submit for Approval
           </Button>
