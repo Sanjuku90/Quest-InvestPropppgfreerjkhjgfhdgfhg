@@ -256,20 +256,28 @@ export async function registerRoutes(
 
     const winAmount = Math.floor(game.stake * parseFloat(game.currentMultiplier));
     
-    await storage.updateUser(user.id, {
-      walletBalance: (user.walletBalance + winAmount) as any
+    // Refresh user from DB to get latest balance
+    const currentUser = await storage.getUser(user.id);
+    if (!currentUser) return res.sendStatus(404);
+
+    const updatedUser = await storage.updateUser(user.id, {
+      walletBalance: ((currentUser.walletBalance ?? 0) + winAmount) as any
     });
 
-    const updatedGame = await storage.updateChestGame(game.id, { status: "cashed_out", securedGains: winAmount });
+    const updatedGame = await storage.updateChestGame(game.id, { 
+      status: "cashed_out", 
+      securedGains: winAmount 
+    });
 
     await storage.createTransaction({
       userId: user.id,
-      type: "quest_reward", // Using quest_reward as a generic gain type for now
+      type: "quest_reward",
       amount: winAmount,
       description: `Gains Jeu des Coffres (x${game.currentMultiplier})`,
+      status: "approved"
     });
 
-    res.json({ message: `Encaissé ! Vous avez gagné ${winAmount} USD`, game: updatedGame });
+    res.json({ message: `Encaissé ! Vous avez gagné ${winAmount} USD`, game: updatedGame, user: updatedUser });
   });
 
   // === Leaderboard ===

@@ -58,8 +58,9 @@ export default function ChestGame() {
       return res.json();
     },
     onSuccess: (data) => {
+      queryClient.setQueryData(["/api/user"], data.user);
       queryClient.invalidateQueries({ queryKey: ["/api/game/chest/active"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wallet/history"] });
       toast({ title: "Encaissé", description: data.message });
     }
   });
