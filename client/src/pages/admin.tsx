@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, Check, X, Loader2 } from "lucide-react";
+import { AlertCircle, Check, X, Loader2, Copy } from "lucide-react";
 import { useState } from "react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -17,12 +17,21 @@ interface Transaction {
   description?: string;
   status: string;
   adminNote?: string;
+  depositAddress?: string;
   createdAt: string;
 }
 
 export default function AdminPage() {
   const { toast } = useToast();
   const [adminNotes, setAdminNotes] = useState<Record<number, string>>({});
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(type);
+    toast({ title: "Copied!", description: `${type} copied to clipboard` });
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const { data: transactions = [], isLoading } = useQuery<Transaction[]>({
     queryKey: ["/api/admin/transactions/pending"],
@@ -108,14 +117,29 @@ export default function AdminPage() {
                   <p className="text-sm text-muted-foreground">Date: {new Date(tx.createdAt).toLocaleString()}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">{tx.amount.toLocaleString()} XOF</p>
+                  <p className="text-2xl font-bold text-primary">{tx.amount.toLocaleString()} USD</p>
                 </div>
               </div>
 
               {tx.depositAddress && (
-                <div className="p-3 rounded-lg bg-muted/40 space-y-2">
-                  <p className="text-xs text-muted-foreground font-medium">Deposit Address</p>
-                  <p className="text-sm font-mono break-all">{tx.depositAddress}</p>
+                <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-1">USDT TRC20 Deposit Address</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-mono break-all bg-black/30 px-3 py-2 rounded">{tx.depositAddress}</p>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => copyToClipboard(tx.depositAddress!, "Address")}
+                          className="flex-shrink-0"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-300">✓ Amount: {tx.amount} USD expected</p>
                 </div>
               )}
 

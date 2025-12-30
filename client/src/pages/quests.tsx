@@ -114,7 +114,7 @@ export default function QuestsPage() {
                     </div>
                   </div>
                   <p className="text-sm font-mono text-primary">
-                    Reward: {quest.rewardAmount.toLocaleString()} XOF
+                    Reward: {quest.rewardAmount.toLocaleString()} USD
                   </p>
                 </div>
 

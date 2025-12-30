@@ -76,7 +76,7 @@ export function TransactionList({ transactions, isLoading }: TransactionListProp
               </div>
             </div>
             <div className={cn("font-mono font-bold text-lg", amountPrefix === "+" ? "text-emerald-400" : "text-foreground")}>
-              {amountPrefix}{tx.amount.toLocaleString()} XOF
+              {amountPrefix}{tx.amount.toLocaleString()} USD
             </div>
           </div>
         );

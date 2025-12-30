@@ -95,7 +95,7 @@ export async function registerRoutes(
       userId: user.id,
       type: "deposit",
       amount: amount,
-      description: `Dépôt de ${amount} XOF`,
+      description: `Dépôt de ${amount} USD`,
       depositAddress: depositAddress,
       status: "pending",
     });

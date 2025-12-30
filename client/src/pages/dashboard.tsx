@@ -47,21 +47,21 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard
           title="Investment Balance"
-          value={`${(user.investmentBalance ?? 0).toLocaleString()} XOF`}
+          value={`${(user.investmentBalance ?? 0).toLocaleString()} USD`}
           icon={TrendingUp}
           gradient="from-blue-600/25 to-cyan-500/15"
           className="border-blue-500/30 shadow-lg shadow-blue-500/10"
         />
         <StatCard
           title="Locked Bonus"
-          value={`${(user.bonusBalance ?? 0).toLocaleString()} XOF`}
+          value={`${(user.bonusBalance ?? 0).toLocaleString()} USD`}
           icon={Lock}
           gradient="from-purple-600/25 to-pink-500/15"
           className="border-purple-500/30 shadow-lg shadow-purple-500/10"
         />
         <StatCard
           title="Withdrawable Balance"
-          value={`${(user.walletBalance ?? 0).toLocaleString()} XOF`}
+          value={`${(user.walletBalance ?? 0).toLocaleString()} USD`}
           icon={Wallet}
           gradient="from-emerald-600/25 to-green-500/15"
           className="border-emerald-500/30 shadow-lg shadow-emerald-500/10"

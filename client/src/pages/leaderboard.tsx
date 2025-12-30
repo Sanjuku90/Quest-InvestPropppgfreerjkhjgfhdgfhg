@@ -54,7 +54,7 @@ export default function LeaderboardPage() {
                       <TrendingUp className="w-3 h-3" /> Investment
                     </p>
                     <p className="font-mono font-bold text-lg">
-                      {(leader.investmentBalance ?? 0).toLocaleString()} XOF
+                      {(leader.investmentBalance ?? 0).toLocaleString()} USD
                     </p>
                   </div>
                   
@@ -63,7 +63,7 @@ export default function LeaderboardPage() {
                       <Zap className="w-3 h-3" /> Referral
                     </p>
                     <p className="font-mono font-bold text-lg text-primary">
-                      {(leader.referralEarnings ?? 0).toLocaleString()} XOF
+                      {(leader.referralEarnings ?? 0).toLocaleString()} USD
                     </p>
                   </div>
                 </div>

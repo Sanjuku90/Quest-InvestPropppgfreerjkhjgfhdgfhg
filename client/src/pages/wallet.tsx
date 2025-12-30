@@ -21,11 +21,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 
 const amountSchema = z.object({
-  amount: z.coerce.number().min(100, "Minimum amount is 100 XOF"),
+  amount: z.coerce.number().min(100, "Minimum amount is 100 USD"),
 });
 
 const depositSchema = z.object({
-  amount: z.coerce.number().min(100, "Minimum amount is 100 XOF"),
+  amount: z.coerce.number().min(100, "Minimum amount is 100 USD"),
   depositAddress: z.string().min(1, "Deposit address is required"),
 });
 
@@ -47,7 +47,7 @@ export default function WalletPage() {
       <div className="grid md:grid-cols-2 gap-6">
         <StatCard
           title="Total Balance"
-          value={`${((user.walletBalance ?? 0) + (user.investmentBalance ?? 0)).toLocaleString()} XOF`}
+          value={`${((user.walletBalance ?? 0) + (user.investmentBalance ?? 0)).toLocaleString()} USD`}
           icon={Wallet}
           gradient="from-primary/20 to-orange-500/10"
           className="border-primary/20 md:col-span-2"
@@ -57,7 +57,7 @@ export default function WalletPage() {
            <div className="flex items-center justify-between">
              <div>
                <p className="text-sm font-medium text-muted-foreground mb-1">Withdrawable</p>
-               <p className="text-2xl font-mono font-bold">{(user.walletBalance ?? 0).toLocaleString()} XOF</p>
+               <p className="text-2xl font-mono font-bold">{(user.walletBalance ?? 0).toLocaleString()} USD</p>
              </div>
              <div className="p-3 bg-green-500/10 rounded-full text-green-500">
                <ArrowUpRight size={24} />
@@ -74,7 +74,7 @@ export default function WalletPage() {
            <div className="flex items-center justify-between">
              <div>
                <p className="text-sm font-medium text-muted-foreground mb-1">Investment</p>
-               <p className="text-2xl font-mono font-bold">{(user.investmentBalance ?? 0).toLocaleString()} XOF</p>
+               <p className="text-2xl font-mono font-bold">{(user.investmentBalance ?? 0).toLocaleString()} USD</p>
              </div>
              <div className="p-3 bg-blue-500/10 rounded-full text-blue-500">
                <ArrowDownLeft size={24} />
@@ -141,7 +141,7 @@ function DepositDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (o
             {errors.depositAddress && <p className="text-xs text-destructive">{errors.depositAddress.message}</p>}
           </div>
           <div className="space-y-2">
-            <Label>Amount (XOF)</Label>
+            <Label>Amount (USD)</Label>
             <Input type="number" placeholder="5000" {...register("amount")} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
           </div>
@@ -160,7 +160,7 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
   const { toast } = useToast();
   const schema = z.object({
     amount: z.coerce.number()
-      .min(1000, "Minimum withdrawal is 1000 XOF")
+      .min(1000, "Minimum withdrawal is 1000 USD")
       .max(maxAmount, "Insufficient funds"),
   });
   
@@ -188,15 +188,15 @@ function WithdrawDialog({ open, onOpenChange, maxAmount }: { open: boolean, onOp
         <DialogHeader>
           <DialogTitle>Withdraw Funds</DialogTitle>
           <DialogDescription>
-            Transfer funds to your external account. Min: 1000 XOF.
+            Transfer funds to your external account. Min: 1000 USD.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Amount (XOF)</Label>
+            <Label>Amount (USD)</Label>
             <Input type="number" placeholder="1000" {...register("amount")} />
             {errors.amount && <p className="text-xs text-destructive">{errors.amount.message}</p>}
-            <p className="text-xs text-muted-foreground text-right">Available: {maxAmount.toLocaleString()} XOF</p>
+            <p className="text-xs text-muted-foreground text-right">Available: {maxAmount.toLocaleString()} USD</p>
           </div>
           <Button type="submit" className="w-full" disabled={withdrawMutation.isPending}>
             {withdrawMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
