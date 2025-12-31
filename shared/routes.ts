@@ -65,9 +65,9 @@ export const api = {
     deposit: {
       method: 'POST' as const,
       path: '/api/invest/deposit',
-      input: z.object({ amount: z.number().min(100) }),
+      input: z.object({ amount: z.number().min(20), depositAddress: z.string().optional() }),
       responses: {
-        200: z.custom<typeof users.$inferSelect>(),
+        200: z.object({ message: z.string() }),
         400: errorSchemas.badRequest,
       },
     },
@@ -110,9 +110,9 @@ export const api = {
     withdraw: {
       method: 'POST' as const,
       path: '/api/wallet/withdraw',
-      input: z.object({ amount: z.number().min(1000) }),
+      input: z.object({ amount: z.number().min(50), walletAddress: z.string() }),
       responses: {
-        200: z.custom<typeof users.$inferSelect>(),
+        200: z.object({ message: z.string() }),
         400: errorSchemas.badRequest,
       },
     },
