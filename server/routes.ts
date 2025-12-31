@@ -27,8 +27,8 @@ export async function registerRoutes(
       const extraQuests = Math.floor((user.investmentBalance ?? 0) / 50000); // Example: 1 extra per 50k
       const totalQuests = baseQuests + extraQuests;
       
-      // 35% of investment balance per quest
-      const rewardAmount = Math.floor((user.investmentBalance ?? 0) * 0.35);
+      // 20% of investment balance per quest
+      const rewardAmount = Math.floor((user.investmentBalance ?? 0) * 0.20);
 
       const questTypes = [
         { type: "video", desc: "Regarder une vidéo sponsorisée" },
