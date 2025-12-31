@@ -6,7 +6,7 @@ QuestInvest Pro is a gamified investment platform where users can invest money, 
 
 **Core Features:**
 - User investment with 40% first deposit bonus
-- Daily quest system (video watching, quizzes, link clicks, referrals) earning 35% of investment per quest
+- Daily quest system (video watching, quizzes, link clicks, referrals) earning 20% of investment per quest
 - Roulette wheel game to unlock locked bonus balances
 - Wallet management with deposits and withdrawals
 - Gamification: Bronze/Silver/Gold/Platinum member levels and leaderboards
